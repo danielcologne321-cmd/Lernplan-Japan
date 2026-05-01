@@ -1,0 +1,2940 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="日本語">
+<meta name="theme-color" content="#f5f1e8">
+<title>日本語 — Lerntool</title>
+<style>
+/* ============================================================
+   Klassisch-japanisches Design — Wabi-Sabi, Mincho, Washi-Töne
+   ============================================================ */
+:root {
+    --sumi: #1a1a1a;
+    --sumi-soft: #2c2c2c;
+    --shironeri: #f5f1e8;
+    --shironeri-2: #ede7d7;
+    --enji: #b94a48;
+    --enji-deep: #8a3735;
+    --ai: #2c4a6b;
+    --ai-soft: #4a6884;
+    --kincha: #b8860b;
+    --takezumi: #5d6e5b;
+    --usuzumi: #8a8680;
+    --kinari: #e6dfc8;
+
+    --font-jp: 'Yu Mincho', 'Hiragino Mincho ProN', 'Noto Serif JP', 'MS Mincho', serif;
+    --font-de: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif;
+}
+
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+html, body {
+    margin: 0;
+    padding: 0;
+    background-color: var(--shironeri);
+    color: var(--sumi);
+    font-family: var(--font-de);
+    font-size: 16px;
+    line-height: 1.5;
+    overscroll-behavior-y: none;
+    background-image:
+        radial-gradient(circle at 20% 30%, rgba(200,170,120,0.05) 0, transparent 40%),
+        radial-gradient(circle at 80% 70%, rgba(120,100,80,0.04) 0, transparent 40%);
+    min-height: 100vh;
+}
+
+.jp { font-family: var(--font-jp); }
+
+a { color: var(--ai); }
+
+/* ----------- App-Layout ----------- */
+.app {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 0 1rem 6rem 1rem; /* Platz für Tab-Bar unten */
+    min-height: 100vh;
+    padding-top: env(safe-area-inset-top);
+}
+
+.app-header {
+    text-align: center;
+    padding: 2rem 0 1rem 0;
+    border-bottom: 1px solid var(--sumi);
+    position: relative;
+    margin-bottom: 1.5rem;
+}
+
+.app-header .title {
+    font-family: var(--font-jp);
+    font-size: 2.4rem;
+    color: var(--ai);
+    margin: 0;
+    letter-spacing: 0.08em;
+}
+
+.app-header .subtitle {
+    font-size: 0.85rem;
+    color: var(--usuzumi);
+    margin-top: 0.3rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+}
+
+/* Seigaiha-Wellen als Header-Hintergrund */
+.app-header::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='40' height='20' viewBox='0 0 40 20'><path d='M0,20 Q10,0 20,20 T40,20' fill='none' stroke='%232c4a6b' stroke-width='0.6' opacity='0.18'/></svg>");
+    background-repeat: repeat;
+    background-size: 30px 15px;
+    opacity: 0.25;
+    pointer-events: none;
+    z-index: -1;
+}
+
+/* ----------- Tab-Bar (unten, Mobile-First) ----------- */
+.tab-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: var(--shironeri);
+    border-top: 1px solid var(--sumi);
+    display: flex;
+    z-index: 100;
+    padding-bottom: env(safe-area-inset-bottom);
+}
+
+.tab-btn {
+    flex: 1;
+    background: transparent;
+    border: none;
+    padding: 0.8rem 0.3rem 0.7rem 0.3rem;
+    font-family: var(--font-jp);
+    font-size: 0.8rem;
+    color: var(--usuzumi);
+    cursor: pointer;
+    transition: color 200ms;
+    position: relative;
+    line-height: 1.2;
+}
+
+.tab-btn .tab-jp {
+    display: block;
+    font-size: 1.05rem;
+    color: var(--sumi-soft);
+    margin-bottom: 0.15rem;
+}
+
+.tab-btn.active {
+    color: var(--enji);
+}
+
+.tab-btn.active .tab-jp {
+    color: var(--ai);
+}
+
+.tab-btn.active::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 25%;
+    right: 25%;
+    height: 2px;
+    background-color: var(--enji);
+}
+
+/* ----------- Sektionen (Tabs Inhalt) ----------- */
+.section { display: none; }
+.section.active { display: block; }
+
+h2 {
+    font-family: var(--font-jp);
+    color: var(--ai);
+    font-size: 1.4rem;
+    font-weight: normal;
+    border-left: 3px double var(--enji);
+    padding-left: 0.8rem;
+    margin: 1.5rem 0 0.8rem 0;
+}
+
+/* ----------- Karten / Boxen ----------- */
+.card {
+    background-color: rgba(255, 252, 245, 0.6);
+    border: 1px solid var(--usuzumi);
+    padding: 1.2rem;
+    margin-bottom: 1rem;
+}
+
+/* ----------- Buttons ----------- */
+.btn {
+    background-color: transparent;
+    color: var(--sumi);
+    border: 1px solid var(--sumi);
+    padding: 0.7rem 1.2rem;
+    font-family: var(--font-de);
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 200ms, color 200ms;
+    margin: 0.3rem 0.3rem 0.3rem 0;
+    min-height: 44px; /* Touch-Target iOS-Konvention */
+}
+
+.btn:active { background-color: var(--sumi); color: var(--shironeri); }
+.btn-primary { background-color: var(--ai); color: var(--shironeri); border-color: var(--ai); }
+.btn-primary:active { background-color: var(--sumi); }
+.btn-accent { background-color: var(--enji); color: var(--shironeri); border-color: var(--enji-deep); }
+.btn-ghost { border-color: var(--usuzumi); color: var(--usuzumi); }
+
+.btn-row { display: flex; flex-wrap: wrap; gap: 0.4rem; margin: 1rem 0; }
+.btn-row .btn { flex: 1 1 auto; min-width: 0; }
+
+/* ----------- Heute-Tab ----------- */
+.today-card { text-align: center; padding: 2rem 1rem; }
+
+.today-day {
+    font-family: var(--font-jp);
+    font-size: 1.1rem;
+    color: var(--enji);
+    letter-spacing: 0.1em;
+}
+
+.today-task {
+    font-family: var(--font-jp);
+    font-size: 1.4rem;
+    color: var(--ai);
+    margin: 1rem 0;
+    line-height: 1.5;
+}
+
+.today-detail {
+    color: var(--sumi-soft);
+    margin-bottom: 1.5rem;
+}
+
+.streak {
+    display: inline-block;
+    padding: 0.4rem 0.9rem;
+    background-color: var(--takezumi);
+    color: var(--shironeri);
+    font-family: var(--font-jp);
+    margin-top: 1rem;
+    border-radius: 0; /* flach */
+}
+
+/* ----------- Kana-Drill ----------- */
+.kana-card {
+    text-align: center;
+    padding: 3rem 1rem;
+    background-color: var(--shironeri-2);
+    border: 1px solid var(--sumi);
+    margin: 1rem 0;
+    position: relative;
+    min-height: 220px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+
+.kana-display {
+    font-family: var(--font-jp);
+    font-size: 6rem;
+    color: var(--sumi);
+    line-height: 1;
+    margin-bottom: 0.5rem;
+    transition: opacity 200ms;
+}
+
+.kana-romaji {
+    font-size: 1.5rem;
+    color: var(--ai);
+    font-style: italic;
+    margin-top: 0.5rem;
+}
+
+.kana-mnemonic {
+    font-size: 0.95rem;
+    color: var(--usuzumi);
+    margin-top: 0.7rem;
+    max-width: 80%;
+    text-align: center;
+}
+
+.kana-card.shake { animation: shake 280ms ease-out; }
+@keyframes shake {
+    10%, 90% { transform: translateX(-2px); }
+    20%, 80% { transform: translateX(4px); }
+    30%, 50%, 70% { transform: translateX(-7px); }
+    40%, 60% { transform: translateX(7px); }
+}
+
+/* Hanko Stempel */
+.hanko {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    width: 3rem;
+    height: 3rem;
+    background-color: var(--enji);
+    color: var(--shironeri);
+    font-family: var(--font-jp);
+    font-size: 1.6rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid var(--enji-deep);
+    box-shadow: inset 0 0 0 1px rgba(245,241,232,0.3);
+    transform: rotate(-6deg) scale(0);
+    opacity: 0;
+    pointer-events: none;
+    transition: none;
+}
+
+.hanko.show {
+    animation: hankoStamp 320ms cubic-bezier(0.18, 1.2, 0.32, 1) forwards;
+}
+
+@keyframes hankoStamp {
+    0%   { transform: rotate(-6deg) scale(0.4); opacity: 0; }
+    60%  { transform: rotate(-9deg) scale(1.18); opacity: 1; }
+    100% { transform: rotate(-6deg) scale(1); opacity: 1; }
+}
+
+/* Antwort-Optionen (Multiple Choice) */
+.choice-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.5rem;
+    margin-top: 1rem;
+}
+
+.choice-btn {
+    padding: 1rem 0.5rem;
+    border: 1px solid var(--sumi);
+    background-color: var(--shironeri);
+    font-size: 1.1rem;
+    cursor: pointer;
+    min-height: 56px;
+    font-family: var(--font-de);
+}
+
+.choice-btn:active { background-color: var(--sumi); color: var(--shironeri); }
+.choice-btn.correct { background-color: var(--takezumi); color: var(--shironeri); border-color: var(--takezumi); }
+.choice-btn.wrong { background-color: var(--enji); color: var(--shironeri); border-color: var(--enji-deep); }
+.choice-btn:disabled { cursor: not-allowed; opacity: 0.7; }
+
+/* Stats-Zeile */
+.drill-stats {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.6rem 0.2rem;
+    color: var(--usuzumi);
+    font-size: 0.9rem;
+    border-bottom: 1px solid var(--usuzumi);
+    margin-bottom: 0.6rem;
+}
+
+/* ----------- Settings (Drill-Konfiguration) ----------- */
+.settings-row {
+    margin: 0.6rem 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    align-items: center;
+}
+
+.settings-row label {
+    color: var(--usuzumi);
+    font-size: 0.85rem;
+    margin-right: 0.4rem;
+    flex: 0 0 auto;
+}
+
+.chip {
+    display: inline-block;
+    padding: 0.4rem 0.8rem;
+    border: 1px solid var(--usuzumi);
+    background-color: transparent;
+    color: var(--sumi);
+    font-size: 0.85rem;
+    cursor: pointer;
+    user-select: none;
+    transition: all 200ms;
+    min-height: 36px;
+}
+
+.chip.active {
+    background-color: var(--ai);
+    color: var(--shironeri);
+    border-color: var(--ai);
+}
+
+/* ----------- Vokabeln / Kanji-Karten ----------- */
+.flashcard {
+    background-color: var(--shironeri-2);
+    border: 1px solid var(--sumi);
+    padding: 2rem 1rem;
+    text-align: center;
+    min-height: 220px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    cursor: pointer;
+    user-select: none;
+    transition: transform 280ms, opacity 200ms;
+    position: relative;
+}
+
+.flashcard.flipped { transform: rotateY(180deg); }
+
+.flash-jp {
+    font-family: var(--font-jp);
+    font-size: 2.2rem;
+    color: var(--sumi);
+}
+
+.flash-romaji {
+    font-size: 1rem;
+    color: var(--ai);
+    font-style: italic;
+    margin-top: 0.6rem;
+}
+
+.flash-de {
+    font-size: 1.3rem;
+    color: var(--ai);
+    margin-top: 1rem;
+}
+
+.flash-detail {
+    font-size: 0.95rem;
+    color: var(--usuzumi);
+    margin-top: 0.6rem;
+}
+
+.flash-hint {
+    position: absolute;
+    bottom: 0.6rem;
+    right: 0.8rem;
+    font-size: 0.7rem;
+    color: var(--usuzumi);
+    letter-spacing: 0.1em;
+}
+
+/* ----------- Tracker (26 Wochen) ----------- */
+.tracker-week {
+    display: grid;
+    grid-template-columns: 70px repeat(7, 1fr) auto;
+    gap: 0.4rem;
+    align-items: center;
+    margin: 0.5rem 0;
+    padding: 0.4rem 0;
+    border-bottom: 1px solid var(--shironeri-2);
+    font-size: 0.9rem;
+}
+
+.tracker-label { color: var(--usuzumi); font-family: var(--font-jp); }
+
+.day-cell {
+    width: 100%;
+    aspect-ratio: 1;
+    max-width: 32px;
+    background-color: var(--shironeri-2);
+    border: 1px solid var(--usuzumi);
+    cursor: pointer;
+    position: relative;
+    margin: 0 auto;
+}
+
+.day-cell.done {
+    background-color: var(--enji);
+    border-color: var(--enji-deep);
+}
+
+.day-cell.done::after {
+    content: "正";
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    color: var(--shironeri);
+    font-family: var(--font-jp);
+    font-size: 0.8rem;
+}
+
+.tracker-phase-header {
+    font-family: var(--font-jp);
+    color: var(--ai);
+    font-size: 1.1rem;
+    margin-top: 1.4rem;
+    margin-bottom: 0.6rem;
+    border-bottom: 1px solid var(--ai);
+    padding-bottom: 0.3rem;
+}
+
+/* ----------- Reset / Verwaltung ----------- */
+.danger-zone {
+    margin-top: 3rem;
+    padding-top: 1rem;
+    border-top: 1px dashed var(--usuzumi);
+}
+
+.danger-zone h3 {
+    color: var(--enji);
+    font-family: var(--font-jp);
+    font-weight: normal;
+    font-size: 1rem;
+}
+
+/* ----------- Sumi-Trenner ----------- */
+.sumi-divider {
+    height: 18px;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='18'><path d='M5,9 Q40,3 80,10 T160,8 Q180,6 195,10' fill='none' stroke='%231a1a1a' stroke-width='1.6' stroke-linecap='round' opacity='0.6'/></svg>");
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
+    background-position: center;
+    margin: 1.5rem 0;
+}
+
+/* Mobile: weniger Padding */
+@media (max-width: 480px) {
+    .app { padding: 0 0.7rem 6rem 0.7rem; }
+    .kana-display { font-size: 5rem; }
+    .flash-jp { font-size: 1.8rem; }
+    .tracker-week { grid-template-columns: 60px repeat(7, 1fr); font-size: 0.8rem; }
+    .day-cell { max-width: 26px; }
+}
+
+/* iPad / breitere Geräte */
+@media (min-width: 768px) {
+    .app { padding-bottom: 7rem; }
+    .kana-display { font-size: 7rem; }
+}
+
+/* ----------- Utility ----------- */
+.muted { color: var(--usuzumi); }
+.center { text-align: center; }
+.small { font-size: 0.85rem; }
+.spaced { margin: 1.5rem 0; }
+
+/* ----------- Hilfe-Box (ausklappbare Erklärung) ----------- */
+.help-box {
+    border: 1px solid var(--ai);
+    background-color: rgba(44, 74, 107, 0.05);
+    margin: 0.6rem 0 1rem 0;
+    padding: 0;
+}
+.help-box summary {
+    cursor: pointer;
+    padding: 0.7rem 1rem;
+    font-family: var(--font-jp);
+    color: var(--ai);
+    font-size: 0.95rem;
+    list-style: none;
+    user-select: none;
+}
+.help-box summary::-webkit-details-marker { display: none; }
+.help-box[open] summary {
+    border-bottom: 1px solid var(--ai);
+    background-color: rgba(44, 74, 107, 0.08);
+}
+.help-box .help-content {
+    padding: 0.8rem 1rem 1rem 1rem;
+    font-size: 0.92rem;
+}
+.help-box .help-content p { margin: 0.5rem 0 0.3rem 0; color: var(--sumi); }
+.help-box .help-content ul { margin: 0 0 0.6rem 0; padding-left: 1.2rem; }
+.help-box .help-content li { margin-bottom: 0.25rem; color: var(--sumi-soft); }
+
+/* ============================================================
+   Lernen-Tab: Kapitel-Liste und Detail-Ansicht
+   ============================================================ */
+.chapter-list { display: grid; gap: 0.6rem; margin-top: 0.8rem; }
+
+.chapter-card {
+    border: 1px solid var(--sumi);
+    background-color: rgba(255, 252, 245, 0.7);
+    padding: 1rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.9rem;
+    transition: background-color 200ms;
+}
+
+.chapter-card:active { background-color: var(--shironeri-2); }
+
+.chapter-card .ch-num {
+    font-family: var(--font-jp);
+    font-size: 1.6rem;
+    color: var(--enji);
+    flex: 0 0 2.4rem;
+    text-align: center;
+    line-height: 1;
+}
+
+.chapter-card .ch-meta { flex: 1 1 auto; min-width: 0; }
+.chapter-card .ch-title {
+    font-family: var(--font-jp);
+    font-size: 1.05rem;
+    color: var(--ai);
+    margin: 0 0 0.2rem 0;
+}
+.chapter-card .ch-jp {
+    font-family: var(--font-jp);
+    font-size: 0.85rem;
+    color: var(--usuzumi);
+    letter-spacing: 0.1em;
+}
+
+.chapter-card .ch-arrow {
+    color: var(--usuzumi);
+    font-family: var(--font-jp);
+    font-size: 1.4rem;
+    flex: 0 0 auto;
+}
+
+/* Detail-Ansicht (das, was ausgedruckt wird) */
+.chapter-detail { display: none; }
+.chapter-detail.active { display: block; }
+
+.chapter-toolbar {
+    display: flex;
+    gap: 0.4rem;
+    flex-wrap: wrap;
+    align-items: center;
+    margin-bottom: 1rem;
+    padding-bottom: 0.6rem;
+    border-bottom: 1px solid var(--usuzumi);
+}
+
+.chapter-toolbar .spacer { flex: 1 1 auto; }
+
+.print-target {
+    background-color: var(--shironeri);
+    padding: 0.5rem 0;
+}
+
+.print-target h1, .print-target h2, .print-target h3 {
+    font-family: var(--font-jp);
+    color: var(--ai);
+    font-weight: normal;
+}
+
+.print-target h1 {
+    font-size: 1.8rem;
+    border-bottom: 2px double var(--enji);
+    padding-bottom: 0.4rem;
+    margin: 0 0 1rem 0;
+    letter-spacing: 0.04em;
+}
+
+.print-target h2 {
+    font-size: 1.3rem;
+    border-left: 3px double var(--enji);
+    padding-left: 0.7rem;
+    margin: 1.4rem 0 0.6rem 0;
+}
+
+.print-target h3 {
+    font-size: 1.05rem;
+    color: var(--sumi);
+    margin: 1rem 0 0.4rem 0;
+}
+
+.print-target p { margin: 0.5rem 0; }
+.print-target ul, .print-target ol { padding-left: 1.4rem; }
+.print-target li { margin-bottom: 0.3rem; }
+
+.print-target table {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 0.6rem 0;
+    font-size: 0.92rem;
+}
+.print-target th {
+    color: var(--ai);
+    font-family: var(--font-jp);
+    font-weight: normal;
+    border-bottom: 2px solid var(--ai);
+    text-align: left;
+    padding: 0.35rem 0.5rem;
+    vertical-align: top;
+}
+.print-target td {
+    border-bottom: 1px solid var(--usuzumi);
+    padding: 0.35rem 0.5rem;
+    vertical-align: top;
+}
+.print-target td.jp, .print-target td:first-child.jp { font-family: var(--font-jp); font-size: 1.05rem; }
+.print-target em { color: var(--ai); font-style: italic; }
+.print-target blockquote {
+    border-left: 3px solid var(--kincha);
+    background-color: var(--shironeri-2);
+    margin: 0.7rem 0;
+    padding: 0.4rem 0.9rem;
+    color: var(--sumi-soft);
+    font-style: italic;
+}
+.print-target .warn {
+    border: 1px solid var(--enji);
+    background-color: rgba(185, 74, 72, 0.08);
+    padding: 0.5rem 0.8rem;
+    margin: 0.6rem 0;
+}
+.print-target code {
+    font-family: 'Menlo', 'Consolas', monospace;
+    font-size: 0.9em;
+    background-color: var(--shironeri-2);
+    padding: 0.05rem 0.3rem;
+    border: 1px solid var(--usuzumi);
+}
+
+/* Tab-Bar mit 6 Tabs — kompaktere Schrift auf engen iPhones */
+.tab-bar.tabs-6 .tab-btn { padding: 0.65rem 0.15rem 0.5rem 0.15rem; font-size: 0.7rem; }
+.tab-bar.tabs-6 .tab-btn .tab-jp { font-size: 0.95rem; margin-bottom: 0.1rem; }
+
+/* ============================================================
+   Print-Stylesheet — Notability-freundliche PDFs
+   Wenn der User auf "Drucken / In Notability speichern" tippt,
+   blendet das Stylesheet alles aus außer dem Kapitelinhalt.
+   ============================================================ */
+@media print {
+    @page {
+        size: A4 portrait;
+        margin: 18mm 15mm 20mm 30mm; /* extra linker Rand für Pencil-Notizen */
+    }
+
+    html, body {
+        background: #f5f1e8 !important;
+        color: #1a1a1a !important;
+        font-size: 11pt;
+        line-height: 1.55;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+
+    /* Im Druckmodus: nur das Druck-Ziel sichtbar lassen */
+    body.printing .app-header,
+    body.printing .tab-bar,
+    body.printing .chapter-toolbar,
+    body.printing #chapter-list-view,
+    body.printing #section-heute,
+    body.printing #section-kana,
+    body.printing #section-vocab,
+    body.printing #section-kanji,
+    body.printing #section-tracker { display: none !important; }
+
+    /* Lernen-Section + Detail-Container + Print-Target müssen alle sichtbar sein */
+    body.printing #section-lernen { display: block !important; }
+    body.printing .chapter-detail { display: block !important; }
+    body.printing .app { padding: 0 !important; max-width: 100% !important; }
+
+    body.printing .print-target {
+        display: block !important;
+        max-width: 100%;
+        padding: 0;
+        margin: 0;
+        background: #f5f1e8 !important;
+    }
+
+    body.printing .print-target h1 {
+        font-size: 22pt;
+        color: #2c4a6b !important;
+        border-bottom: 1pt solid #1a1a1a;
+        padding-bottom: 3mm;
+        margin-bottom: 6mm;
+    }
+    body.printing .print-target h2 {
+        font-size: 16pt;
+        color: #2c4a6b !important;
+        border-left: 2.5pt double #b94a48;
+        padding-left: 4mm;
+        margin: 7mm 0 3mm 0;
+        page-break-after: avoid;
+    }
+    body.printing .print-target h3 {
+        font-size: 12pt;
+        margin: 4mm 0 2mm 0;
+        page-break-after: avoid;
+    }
+    body.printing .print-target table { page-break-inside: avoid; font-size: 10pt; margin: 3mm 0; }
+    body.printing .print-target th { color: #2c4a6b !important; border-bottom: 1pt solid #2c4a6b; }
+    body.printing .print-target td { border-bottom: 0.4pt solid #8a8680; }
+    body.printing .print-target td.jp { font-family: 'Yu Mincho', 'Hiragino Mincho ProN', 'MS Mincho', serif; font-size: 13pt; }
+    body.printing .print-target blockquote {
+        border-left: 2pt solid #b8860b;
+        background-color: #ede7d7 !important;
+        padding: 2mm 4mm;
+    }
+    body.printing .print-target .warn {
+        border: 0.5pt solid #b94a48;
+        background-color: rgba(185, 74, 72, 0.08) !important;
+        padding: 2mm 3mm;
+    }
+}
+</style>
+</head>
+<body>
+<div class="app">
+    <header class="app-header">
+        <h1 class="title">日本語</h1>
+        <div class="subtitle">Lernplan · 6 Monate · Reise</div>
+    </header>
+
+    <!-- Heute -->
+    <section id="section-heute" class="section active">
+        <div class="card today-card">
+            <div class="today-day" id="today-day">— Tag 1 —</div>
+            <div class="today-task" id="today-task">あ・い・う・え・お lernen</div>
+            <div class="today-detail" id="today-detail">Erste Hiragana-Reihe — die fünf Vokale.</div>
+            <button class="btn btn-primary" id="today-start">Drill starten</button>
+            <div class="streak" id="today-streak" style="display:none">🔥 Streak: 0 Tage</div>
+        </div>
+        <div class="sumi-divider"></div>
+        <div class="card" style="border:1px solid var(--enji); background-color: rgba(185,74,72,0.06)">
+            <h2 style="margin-top:0; border-left-color: var(--enji)">Bevor du loslegst</h2>
+            <p>Lies einmal den <strong>Lernplan & Roadmap</strong> durch — damit du verstehst, was in den nächsten 6 Monaten auf dich zukommt und warum Schriftzeichen vor Vokabeln kommen.</p>
+            <button class="btn btn-primary" id="goto-plan">📖 Lernplan & Roadmap öffnen</button>
+        </div>
+
+        <div class="card">
+            <h2>Phase 1 — Schrift-Fundament</h2>
+            <p>Wochen 1–8: erst Hiragana, dann Katakana, dann erste Vokabeln. Schriftzeichen vor allem anderen.</p>
+        </div>
+
+        <div class="card">
+            <h2>Was sind die Tabs unten?</h2>
+            <ul style="margin: 0.4rem 0">
+                <li><strong>今日 Heute</strong> — diese Seite, deine Tagesaufgabe</li>
+                <li><strong>学 Lernen</strong> — alle Kapitel zum Lesen + PDF-Export für Notability (Lernplan, Hiragana, Katakana, Grammatik, Reisesätze, Kanji-Liste)</li>
+                <li><strong>仮名 Kana</strong> — interaktiver Drill für <em>Hiragana &amp; Katakana</em> (oben wählst du mit "System", was du üben willst)</li>
+                <li><strong>単語 Vokabeln</strong> — Karteikarten mit 3-Box-System</li>
+                <li><strong>漢字 Kanji</strong> — Karteikarten für ~80 Reise-Kanji</li>
+                <li><strong>進捗 Tracker</strong> — 26-Wochen-Heatmap zum Abhaken</li>
+            </ul>
+        </div>
+    </section>
+
+    <!-- Kana -->
+    <section id="section-kana" class="section">
+        <h2>仮名 — Kana-Drill</h2>
+        <details class="help-box">
+            <summary>ⓘ Was bedeuten diese Einstellungen?</summary>
+            <div class="help-content">
+                <p><strong>System</strong> — welches Schriftsystem willst du gerade üben?</p>
+                <ul>
+                    <li><strong>ひらがな (Hiragana)</strong> — die "weichen" Zeichen für japanische Wörter (あ・い・う …). <strong>Hier solltest du als Anfänger starten.</strong></li>
+                    <li><strong>カタカナ (Katakana)</strong> — die "eckigen" Zeichen für Lehnwörter (コーヒー, タクシー). Lernst du in Woche 4–5.</li>
+                    <li><strong>Beide</strong> — gemischter Drill, sobald du beide kannst.</li>
+                </ul>
+                <p><strong>Umfang</strong> — wie viele Zeichen werden abgefragt?</p>
+                <ul>
+                    <li><strong>Grund (46)</strong> — die 46 Grundzeichen (あ bis ん). Start für jeden Anfänger.</li>
+                    <li><strong>+ Dakuten</strong> — zusätzlich Zeichen mit Strichen ゛/゜ (が, ざ, ぱ …). Ab Woche 3.</li>
+                    <li><strong>+ Yōon (alle)</strong> — zusätzlich Kombinationen wie きゃ, しゅ, ちょ. Ab Woche 3 Ende.</li>
+                </ul>
+                <p><strong>Modus</strong> — in welche Richtung wird abgefragt?</p>
+                <ul>
+                    <li><strong>Kana → Romaji</strong> — du siehst das Zeichen, wählst die Lautschrift. Erkennen üben.</li>
+                    <li><strong>Romaji → Kana</strong> — du siehst die Lautschrift, wählst das Zeichen. Schwerer, aber wichtig fürs Schreiben.</li>
+                </ul>
+            </div>
+        </details>
+        <div class="settings-row">
+            <label>System</label>
+            <button class="chip kana-system active" data-val="hiragana">ひらがな (Hiragana)</button>
+            <button class="chip kana-system" data-val="katakana">カタカナ (Katakana)</button>
+            <button class="chip kana-system" data-val="both">Beide</button>
+        </div>
+        <div class="settings-row">
+            <label>Umfang</label>
+            <button class="chip kana-scope active" data-val="basic">Grund (46)</button>
+            <button class="chip kana-scope" data-val="dakuten">+ Dakuten</button>
+            <button class="chip kana-scope" data-val="all">+ Yōon (alle)</button>
+        </div>
+        <div class="settings-row">
+            <label>Modus</label>
+            <button class="chip kana-mode active" data-val="kana2romaji">Kana → Romaji</button>
+            <button class="chip kana-mode" data-val="romaji2kana">Romaji → Kana</button>
+        </div>
+
+        <div class="drill-stats">
+            <span>Richtig: <strong id="kana-correct">0</strong></span>
+            <span>Falsch: <strong id="kana-wrong">0</strong></span>
+            <span>Streak: <strong id="kana-streak">0</strong></span>
+        </div>
+
+        <div class="kana-card" id="kana-card">
+            <div class="kana-display jp" id="kana-display">あ</div>
+            <div class="kana-romaji" id="kana-answer" style="display:none">a</div>
+            <div class="kana-mnemonic" id="kana-mnemonic" style="display:none"></div>
+            <div class="hanko" id="kana-hanko">正</div>
+        </div>
+
+        <div class="choice-grid" id="kana-choices"></div>
+        <div class="btn-row">
+            <button class="btn" id="kana-prev">← Zurück</button>
+            <button class="btn btn-ghost" id="kana-show">Lösung zeigen</button>
+            <button class="btn" id="kana-next">Nächstes →</button>
+        </div>
+    </section>
+
+    <!-- Vokabeln -->
+    <section id="section-vocab" class="section">
+        <h2>単語 — Vokabeln</h2>
+        <div class="settings-row" id="vocab-themes"></div>
+        <div class="drill-stats">
+            <span>Karte <strong id="vocab-pos">1</strong> / <strong id="vocab-total">0</strong></span>
+            <span>Box 1: <strong id="vocab-b1">0</strong></span>
+            <span>Box 2: <strong id="vocab-b2">0</strong></span>
+            <span>Box 3: <strong id="vocab-b3">0</strong></span>
+        </div>
+        <div class="flashcard" id="vocab-card">
+            <div class="flash-jp jp" id="vocab-jp">—</div>
+            <div class="flash-romaji" id="vocab-romaji" style="display:none">—</div>
+            <div class="flash-de" id="vocab-de" style="display:none">—</div>
+            <div class="flash-hint">tippen zum Umdrehen</div>
+        </div>
+        <div class="btn-row">
+            <button class="btn" id="vocab-prev">← Zurück</button>
+            <button class="btn" id="vocab-next">Weiter →</button>
+        </div>
+        <div class="btn-row">
+            <button class="btn btn-accent" id="vocab-fail">Wieder Box 1</button>
+            <button class="btn btn-ghost" id="vocab-keep">Box behalten</button>
+            <button class="btn btn-primary" id="vocab-pass">Aufsteigen ↑</button>
+        </div>
+        <p class="muted small">Vor/Zurück blättert nur. Box-Buttons unten werten die Karte (SRS): Box 1 = täglich, Box 2 = alle 2 Tage, Box 3 = wöchentlich.</p>
+    </section>
+
+    <!-- Kanji -->
+    <section id="section-kanji" class="section">
+        <h2>漢字 — Reise-Kanji</h2>
+        <div class="settings-row" id="kanji-blocks"></div>
+        <div class="drill-stats">
+            <span>Karte <strong id="kanji-pos">1</strong> / <strong id="kanji-total">0</strong></span>
+            <span>Block: <strong id="kanji-block-name">—</strong></span>
+        </div>
+        <div class="flashcard" id="kanji-card">
+            <div class="flash-jp jp" style="font-size: 4rem" id="kanji-display">—</div>
+            <div class="flash-de" id="kanji-meaning" style="display:none">—</div>
+            <div class="flash-romaji" id="kanji-reading" style="display:none">—</div>
+            <div class="flash-detail" id="kanji-example" style="display:none">—</div>
+            <div class="flash-hint">tippen zum Umdrehen</div>
+        </div>
+        <div class="btn-row">
+            <button class="btn" id="kanji-prev">← Zurück</button>
+            <button class="btn btn-primary" id="kanji-next">Nächstes →</button>
+        </div>
+    </section>
+
+    <!-- Tracker -->
+    <section id="section-tracker" class="section">
+        <h2>進捗 — 26-Wochen-Tracker</h2>
+        <p class="muted small">Tippe einen Tag, um ihn als gelernt zu markieren. Roter Hanko = erledigt.</p>
+        <div id="tracker-content"></div>
+        <div class="danger-zone">
+            <h3>Reset</h3>
+            <p class="muted small">Setzt allen Lernfortschritt zurück.</p>
+            <button class="btn btn-ghost" id="reset-all">Alles zurücksetzen</button>
+        </div>
+    </section>
+
+    <!-- Lernen -->
+    <section id="section-lernen" class="section">
+        <div id="chapter-list-view">
+            <h2>学 — Lernen</h2>
+            <p class="muted small">Alle Inhalte des Lernplans direkt im Tool — Roadmap, Hiragana, Katakana, Vokabeln, Grammatik, Reisesätze. Tippe ein Kapitel, dann oben "PDF speichern" für Notability.</p>
+            <div class="chapter-list" id="chapter-list"></div>
+        </div>
+        <div id="chapter-detail-view" class="chapter-detail">
+            <div class="chapter-toolbar">
+                <button class="btn btn-ghost" id="ch-back">← Kapitel</button>
+                <div class="spacer"></div>
+                <button class="btn btn-accent" id="ch-print">PDF speichern</button>
+            </div>
+            <div class="print-target" id="chapter-content"></div>
+        </div>
+    </section>
+
+    <!-- Tab-Bar -->
+    <nav class="tab-bar tabs-6">
+        <button class="tab-btn active" data-tab="heute">
+            <span class="tab-jp">今日</span>Heute
+        </button>
+        <button class="tab-btn" data-tab="lernen">
+            <span class="tab-jp">学</span>Lernen
+        </button>
+        <button class="tab-btn" data-tab="kana">
+            <span class="tab-jp">仮名</span>Kana
+        </button>
+        <button class="tab-btn" data-tab="vocab">
+            <span class="tab-jp">単語</span>Vokabeln
+        </button>
+        <button class="tab-btn" data-tab="kanji">
+            <span class="tab-jp">漢字</span>Kanji
+        </button>
+        <button class="tab-btn" data-tab="tracker">
+            <span class="tab-jp">進捗</span>Tracker
+        </button>
+    </nav>
+</div>
+
+<script>
+/* ============================================================
+   Daten — inline eingebettet (offline iPhone-Safari kompatibel)
+   ============================================================ */
+const KANA_DATA = {
+  hiragana: {
+    basic: [
+      {kana:"あ",r:"a",row:"a",m:"Apostroph mit Bauch"},{kana:"い",r:"i",row:"a",m:"Zwei i-Punkte hochkant"},
+      {kana:"う",r:"u",row:"a",m:"Ufer mit Welle"},{kana:"え",r:"e",row:"a",m:"Export-Pfeil"},
+      {kana:"お",r:"o",row:"a",m:"Staunendes O!"},
+      {kana:"か",r:"ka",row:"ka",m:"Kameraobjektiv mit Stativ"},{kana:"き",r:"ki",row:"ka",m:"Key mit zwei Bartzacken"},
+      {kana:"く",r:"ku",row:"ka",m:"Kuckuck-Schnabel"},{kana:"け",r:"ke",row:"ka",m:"Zwei Striche und Kringel"},
+      {kana:"こ",r:"ko",row:"ka",m:"Zwei Kommas übereinander"},
+      {kana:"さ",r:"sa",row:"sa",m:"Sackmesser"},{kana:"し",r:"shi",row:"sa",m:"Schilfhalm-Kurve"},
+      {kana:"す",r:"su",row:"sa",m:"Sushi-Roll mit Schwanz"},{kana:"せ",r:"se",row:"sa",m:"Segelbootmast"},
+      {kana:"そ",r:"so",row:"sa",m:"Solarpanel im Zickzack"},
+      {kana:"た",r:"ta",row:"ta",m:"Tattoo aus drei Strichen"},{kana:"ち",r:"chi",row:"ta",m:"Umgedrehte 5"},
+      {kana:"つ",r:"tsu",row:"ta",m:"Tsunamiwelle, klein"},{kana:"て",r:"te",row:"ta",m:"Teppich mit Quaste"},
+      {kana:"と",r:"to",row:"ta",m:"Torii-Pfahl"},
+      {kana:"な",r:"na",row:"na",m:"Nadel mit Faden"},{kana:"に",r:"ni",row:"na",m:"Niet mit Streben"},
+      {kana:"ぬ",r:"nu",row:"na",m:"Noodle mit Schleife"},{kana:"ね",r:"ne",row:"na",m:"Nest mit Schwanz"},
+      {kana:"の",r:"no",row:"na",m:"No-Auto-Symbol"},
+      {kana:"は",r:"ha",row:"ha",m:"Haus mit Säulen"},{kana:"ひ",r:"hi",row:"ha",m:"Hi-Lächeln"},
+      {kana:"ふ",r:"fu",row:"ha",m:"Fuji-Silhouette"},{kana:"へ",r:"he",row:"ha",m:"Helmgipfel"},
+      {kana:"ほ",r:"ho",row:"ha",m:"Wie は + Strich oben"},
+      {kana:"ま",r:"ma",row:"ma",m:"Marionettenfaden"},{kana:"み",r:"mi",row:"ma",m:"Miniatur-Schnörkel"},
+      {kana:"む",r:"mu",row:"ma",m:"Muuh — Kuh mit Hörnern"},{kana:"め",r:"me",row:"ma",m:"Messauge"},
+      {kana:"も",r:"mo",row:"ma",m:"Mobile mit Querstange"},
+      {kana:"や",r:"ya",row:"ya",m:"Yacht-Anker"},{kana:"ゆ",r:"yu",row:"ya",m:"Yurte mit Pfosten"},
+      {kana:"よ",r:"yo",row:"ya",m:"Yoga-Pose, vertikales L"},
+      {kana:"ら",r:"ra",row:"ra",m:"Rabbit"},{kana:"り",r:"ri",row:"ra",m:"River — zwei Striche"},
+      {kana:"る",r:"ru",row:"ra",m:"Runde Schleife"},{kana:"れ",r:"re",row:"ra",m:"Rechts-Kringel"},
+      {kana:"ろ",r:"ro",row:"ra",m:"Roller, offen"},
+      {kana:"わ",r:"wa",row:"wa",m:"Wassertropfen"},{kana:"を",r:"wo",row:"wa",m:"Windrad (selten)"},
+      {kana:"ん",r:"n",row:"wa",m:"Konsonant ohne Vokal"}
+    ],
+    dakuten: [
+      {kana:"が",r:"ga"},{kana:"ぎ",r:"gi"},{kana:"ぐ",r:"gu"},{kana:"げ",r:"ge"},{kana:"ご",r:"go"},
+      {kana:"ざ",r:"za"},{kana:"じ",r:"ji"},{kana:"ず",r:"zu"},{kana:"ぜ",r:"ze"},{kana:"ぞ",r:"zo"},
+      {kana:"だ",r:"da"},{kana:"ぢ",r:"ji"},{kana:"づ",r:"zu"},{kana:"で",r:"de"},{kana:"ど",r:"do"},
+      {kana:"ば",r:"ba"},{kana:"び",r:"bi"},{kana:"ぶ",r:"bu"},{kana:"べ",r:"be"},{kana:"ぼ",r:"bo"},
+      {kana:"ぱ",r:"pa"},{kana:"ぴ",r:"pi"},{kana:"ぷ",r:"pu"},{kana:"ぺ",r:"pe"},{kana:"ぽ",r:"po"}
+    ],
+    yoon: [
+      {kana:"きゃ",r:"kya"},{kana:"きゅ",r:"kyu"},{kana:"きょ",r:"kyo"},
+      {kana:"しゃ",r:"sha"},{kana:"しゅ",r:"shu"},{kana:"しょ",r:"sho"},
+      {kana:"ちゃ",r:"cha"},{kana:"ちゅ",r:"chu"},{kana:"ちょ",r:"cho"},
+      {kana:"にゃ",r:"nya"},{kana:"にゅ",r:"nyu"},{kana:"にょ",r:"nyo"},
+      {kana:"ひゃ",r:"hya"},{kana:"ひゅ",r:"hyu"},{kana:"ひょ",r:"hyo"},
+      {kana:"みゃ",r:"mya"},{kana:"みゅ",r:"myu"},{kana:"みょ",r:"myo"},
+      {kana:"りゃ",r:"rya"},{kana:"りゅ",r:"ryu"},{kana:"りょ",r:"ryo"},
+      {kana:"ぎゃ",r:"gya"},{kana:"ぎゅ",r:"gyu"},{kana:"ぎょ",r:"gyo"},
+      {kana:"じゃ",r:"ja"},{kana:"じゅ",r:"ju"},{kana:"じょ",r:"jo"}
+    ]
+  },
+  katakana: {
+    basic: [
+      {kana:"ア",r:"a",row:"a",m:"Attention-Pfeil"},{kana:"イ",r:"i",row:"a",m:"Zwei vertikale Striche"},
+      {kana:"ウ",r:"u",row:"a",m:"Dach mit Punkt"},{kana:"エ",r:"e",row:"a",m:"E rotiert"},
+      {kana:"オ",r:"o",row:"a",m:"Kreuz mit Schwanz"},
+      {kana:"カ",r:"ka",row:"ka",m:"Karate-Schlag"},{kana:"キ",r:"ki",row:"ka",m:"Key-Mast"},
+      {kana:"ク",r:"ku",row:"ka",m:"Klammer"},{kana:"ケ",r:"ke",row:"ka",m:"Winkliges K"},
+      {kana:"コ",r:"ko",row:"ka",m:"Eckige Klammer"},
+      {kana:"サ",r:"sa",row:"sa",m:"Sandglas"},{kana:"シ",r:"shi",row:"sa",m:"Drei Tropfen, hochsteigend"},
+      {kana:"ス",r:"su",row:"sa",m:"Z-Form"},{kana:"セ",r:"se",row:"sa",m:"Eckiges Segel"},
+      {kana:"ソ",r:"so",row:"sa",m:"Zwei Tropfen, fallend"},
+      {kana:"タ",r:"ta",row:"ta",m:"Tag-Anhänger"},{kana:"チ",r:"chi",row:"ta",m:"Cheerleader"},
+      {kana:"ツ",r:"tsu",row:"ta",m:"Drei Tropfen vertikal"},{kana:"テ",r:"te",row:"ta",m:"Teleantenne"},
+      {kana:"ト",r:"to",row:"ta",m:"Torii reduziert"},
+      {kana:"ナ",r:"na",row:"na",m:"Nail mit Querbalken"},{kana:"ニ",r:"ni",row:"na",m:"Zwei Striche"},
+      {kana:"ヌ",r:"nu",row:"na",m:"Noodle, sich kreuzend"},{kana:"ネ",r:"ne",row:"na",m:"Nest mit Dach"},
+      {kana:"ノ",r:"no",row:"na",m:"Ein Strich, schräg"},
+      {kana:"ハ",r:"ha",row:"ha",m:"Hängende Augenbrauen"},{kana:"ヒ",r:"hi",row:"ha",m:"Hi! mit Geste"},
+      {kana:"フ",r:"fu",row:"ha",m:"Fuji-Spitze"},{kana:"ヘ",r:"he",row:"ha",m:"Wie Hiragana へ"},
+      {kana:"ホ",r:"ho",row:"ha",m:"Holzkreuz mit Tropfen"},
+      {kana:"マ",r:"ma",row:"ma",m:"Mauerwinkel"},{kana:"ミ",r:"mi",row:"ma",m:"Drei horizontale Striche"},
+      {kana:"ム",r:"mu",row:"ma",m:"Muuh-Maul"},{kana:"メ",r:"me",row:"ma",m:"Messerkreuz"},
+      {kana:"モ",r:"mo",row:"ma",m:"Moped-Lenker"},
+      {kana:"ヤ",r:"ya",row:"ya",m:"Yacht-Mast"},{kana:"ユ",r:"yu",row:"ya",m:"Eckiges U"},
+      {kana:"ヨ",r:"yo",row:"ya",m:"3 spiegelverkehrt"},
+      {kana:"ラ",r:"ra",row:"ra",m:"Radiowellen"},{kana:"リ",r:"ri",row:"ra",m:"Zwei vertikale Striche"},
+      {kana:"ル",r:"ru",row:"ra",m:"Rune mit Schleife"},{kana:"レ",r:"re",row:"ra",m:"Rechter Winkel"},
+      {kana:"ロ",r:"ro",row:"ra",m:"Eckiger Kreis"},
+      {kana:"ワ",r:"wa",row:"wa",m:"Wie ク, unten breiter"},{kana:"ヲ",r:"wo",row:"wa",m:"Windrad (selten)"},
+      {kana:"ン",r:"n",row:"wa",m:"Strich von unten nach oben"}
+    ],
+    dakuten: [
+      {kana:"ガ",r:"ga"},{kana:"ギ",r:"gi"},{kana:"グ",r:"gu"},{kana:"ゲ",r:"ge"},{kana:"ゴ",r:"go"},
+      {kana:"ザ",r:"za"},{kana:"ジ",r:"ji"},{kana:"ズ",r:"zu"},{kana:"ゼ",r:"ze"},{kana:"ゾ",r:"zo"},
+      {kana:"ダ",r:"da"},{kana:"ヂ",r:"ji"},{kana:"ヅ",r:"zu"},{kana:"デ",r:"de"},{kana:"ド",r:"do"},
+      {kana:"バ",r:"ba"},{kana:"ビ",r:"bi"},{kana:"ブ",r:"bu"},{kana:"ベ",r:"be"},{kana:"ボ",r:"bo"},
+      {kana:"パ",r:"pa"},{kana:"ピ",r:"pi"},{kana:"プ",r:"pu"},{kana:"ペ",r:"pe"},{kana:"ポ",r:"po"}
+    ],
+    yoon: [
+      {kana:"キャ",r:"kya"},{kana:"キュ",r:"kyu"},{kana:"キョ",r:"kyo"},
+      {kana:"シャ",r:"sha"},{kana:"シュ",r:"shu"},{kana:"ショ",r:"sho"},
+      {kana:"チャ",r:"cha"},{kana:"チュ",r:"chu"},{kana:"チョ",r:"cho"},
+      {kana:"ニャ",r:"nya"},{kana:"ニュ",r:"nyu"},{kana:"ニョ",r:"nyo"},
+      {kana:"ヒャ",r:"hya"},{kana:"ヒュ",r:"hyu"},{kana:"ヒョ",r:"hyo"},
+      {kana:"ミャ",r:"mya"},{kana:"ミュ",r:"myu"},{kana:"ミョ",r:"myo"},
+      {kana:"リャ",r:"rya"},{kana:"リュ",r:"ryu"},{kana:"リョ",r:"ryo"}
+    ]
+  }
+};
+
+const VOCAB_THEMES = [
+    {id:"greeting",name:"Begrüßung",week:6},
+    {id:"numbers",name:"Zahlen & Zeit",week:7},
+    {id:"family",name:"Familie",week:7},
+    {id:"food",name:"Essen / Restaurant",week:9},
+    {id:"transport",name:"Verkehr / Wege",week:12},
+    {id:"shopping",name:"Einkaufen",week:15},
+    {id:"hotel",name:"Hotel",week:18},
+    {id:"emergency",name:"Notfall",week:21},
+    {id:"weather",name:"Wetter",week:24},
+    {id:"smalltalk",name:"Smalltalk",week:24},
+    {id:"city",name:"Stadt",week:16},
+    {id:"verbs",name:"Verben",week:8}
+];
+
+const VOCAB_DATA = [
+    {jp:"おはようございます",r:"ohayou gozaimasu",de:"Guten Morgen",t:"greeting"},
+    {jp:"こんにちは",r:"konnichiwa",de:"Guten Tag / Hallo",t:"greeting"},
+    {jp:"こんばんは",r:"konbanwa",de:"Guten Abend",t:"greeting"},
+    {jp:"おやすみなさい",r:"oyasumi nasai",de:"Gute Nacht",t:"greeting"},
+    {jp:"さようなら",r:"sayounara",de:"Auf Wiedersehen",t:"greeting"},
+    {jp:"はじめまして",r:"hajimemashite",de:"Schön kennenzulernen",t:"greeting"},
+    {jp:"よろしくおねがいします",r:"yoroshiku onegaishimasu",de:"Standardfloskel beim Vorstellen",t:"greeting"},
+    {jp:"ありがとうございます",r:"arigatou gozaimasu",de:"Vielen Dank",t:"greeting"},
+    {jp:"すみません",r:"sumimasen",de:"Entschuldigung",t:"greeting"},
+    {jp:"ごめんなさい",r:"gomen nasai",de:"Es tut mir leid",t:"greeting"},
+    {jp:"おねがいします",r:"onegaishimasu",de:"Bitte",t:"greeting"},
+    {jp:"どうぞ",r:"douzo",de:"Bitte (anbieten)",t:"greeting"},
+    {jp:"いらっしゃいませ",r:"irasshaimase",de:"Willkommen (im Laden)",t:"greeting"},
+    {jp:"おげんきですか",r:"ogenki desu ka",de:"Wie geht es Ihnen?",t:"greeting"},
+    {jp:"げんきです",r:"genki desu",de:"Mir geht es gut",t:"greeting"},
+    {jp:"はい",r:"hai",de:"Ja",t:"greeting"},
+    {jp:"いいえ",r:"iie",de:"Nein",t:"greeting"},
+    {jp:"わかりました",r:"wakarimashita",de:"Verstanden",t:"greeting"},
+    {jp:"わかりません",r:"wakarimasen",de:"Ich verstehe nicht",t:"greeting"},
+    {jp:"ちょっと",r:"chotto",de:"Ein bisschen / Moment",t:"greeting"},
+
+    {jp:"いち",r:"ichi",de:"Eins",t:"numbers"},{jp:"に",r:"ni",de:"Zwei",t:"numbers"},
+    {jp:"さん",r:"san",de:"Drei",t:"numbers"},{jp:"よん",r:"yon",de:"Vier",t:"numbers"},
+    {jp:"ご",r:"go",de:"Fünf",t:"numbers"},{jp:"ろく",r:"roku",de:"Sechs",t:"numbers"},
+    {jp:"なな",r:"nana",de:"Sieben",t:"numbers"},{jp:"はち",r:"hachi",de:"Acht",t:"numbers"},
+    {jp:"きゅう",r:"kyuu",de:"Neun",t:"numbers"},{jp:"じゅう",r:"juu",de:"Zehn",t:"numbers"},
+    {jp:"ひゃく",r:"hyaku",de:"Hundert",t:"numbers"},{jp:"せん",r:"sen",de:"Tausend",t:"numbers"},
+    {jp:"いま",r:"ima",de:"jetzt",t:"numbers"},{jp:"きょう",r:"kyou",de:"heute",t:"numbers"},
+    {jp:"あした",r:"ashita",de:"morgen",t:"numbers"},{jp:"きのう",r:"kinou",de:"gestern",t:"numbers"},
+    {jp:"あさ",r:"asa",de:"Morgen",t:"numbers"},{jp:"ひる",r:"hiru",de:"Mittag",t:"numbers"},
+    {jp:"よる",r:"yoru",de:"Abend",t:"numbers"},{jp:"なんじ",r:"nanji",de:"wieviel Uhr",t:"numbers"},
+    {jp:"げつようび",r:"getsuyoubi",de:"Montag",t:"numbers"},{jp:"かようび",r:"kayoubi",de:"Dienstag",t:"numbers"},
+    {jp:"すいようび",r:"suiyoubi",de:"Mittwoch",t:"numbers"},{jp:"もくようび",r:"mokuyoubi",de:"Donnerstag",t:"numbers"},
+    {jp:"きんようび",r:"kinyoubi",de:"Freitag",t:"numbers"},{jp:"どようび",r:"doyoubi",de:"Samstag",t:"numbers"},
+    {jp:"にちようび",r:"nichiyoubi",de:"Sonntag",t:"numbers"},
+
+    {jp:"わたし",r:"watashi",de:"ich",t:"family"},{jp:"あなた",r:"anata",de:"du / Sie",t:"family"},
+    {jp:"かぞく",r:"kazoku",de:"Familie",t:"family"},{jp:"おとうさん",r:"otousan",de:"Vater",t:"family"},
+    {jp:"おかあさん",r:"okaasan",de:"Mutter",t:"family"},{jp:"あに",r:"ani",de:"älterer Bruder",t:"family"},
+    {jp:"あね",r:"ane",de:"ältere Schwester",t:"family"},{jp:"おとうと",r:"otouto",de:"jüngerer Bruder",t:"family"},
+    {jp:"いもうと",r:"imouto",de:"jüngere Schwester",t:"family"},{jp:"こども",r:"kodomo",de:"Kind",t:"family"},
+    {jp:"ともだち",r:"tomodachi",de:"Freund/in",t:"family"},{jp:"せんせい",r:"sensei",de:"Lehrer",t:"family"},
+    {jp:"がくせい",r:"gakusei",de:"Schüler / Student",t:"family"},{jp:"おとな",r:"otona",de:"Erwachsener",t:"family"},
+    {jp:"おなまえ",r:"onamae",de:"Name (höflich)",t:"family"},
+
+    {jp:"ごはん",r:"gohan",de:"Reis / Mahlzeit",t:"food"},{jp:"たべもの",r:"tabemono",de:"Essen",t:"food"},
+    {jp:"のみもの",r:"nomimono",de:"Getränk",t:"food"},{jp:"メニュー",r:"menyuu",de:"Speisekarte",t:"food"},
+    {jp:"おみず",r:"omizu",de:"Wasser",t:"food"},{jp:"おちゃ",r:"ocha",de:"grüner Tee",t:"food"},
+    {jp:"コーヒー",r:"koohii",de:"Kaffee",t:"food"},{jp:"ビール",r:"biiru",de:"Bier",t:"food"},
+    {jp:"にほんしゅ",r:"nihonshu",de:"Sake",t:"food"},{jp:"ジュース",r:"juusu",de:"Saft",t:"food"},
+    {jp:"ラーメン",r:"raamen",de:"Ramen",t:"food"},{jp:"うどん",r:"udon",de:"Udon",t:"food"},
+    {jp:"そば",r:"soba",de:"Soba",t:"food"},{jp:"すし",r:"sushi",de:"Sushi",t:"food"},
+    {jp:"さしみ",r:"sashimi",de:"Sashimi",t:"food"},{jp:"てんぷら",r:"tenpura",de:"Tempura",t:"food"},
+    {jp:"カレー",r:"karee",de:"Curry",t:"food"},{jp:"みそしる",r:"misoshiru",de:"Miso-Suppe",t:"food"},
+    {jp:"パン",r:"pan",de:"Brot",t:"food"},{jp:"くだもの",r:"kudamono",de:"Obst",t:"food"},
+    {jp:"やさい",r:"yasai",de:"Gemüse",t:"food"},{jp:"にく",r:"niku",de:"Fleisch",t:"food"},
+    {jp:"さかな",r:"sakana",de:"Fisch",t:"food"},{jp:"とりにく",r:"toriniku",de:"Hähnchen",t:"food"},
+    {jp:"ぎゅうにく",r:"gyuuniku",de:"Rindfleisch",t:"food"},{jp:"ぶたにく",r:"butaniku",de:"Schweinefleisch",t:"food"},
+    {jp:"たまご",r:"tamago",de:"Ei",t:"food"},{jp:"レストラン",r:"resutoran",de:"Restaurant",t:"food"},
+    {jp:"いざかや",r:"izakaya",de:"Izakaya",t:"food"},{jp:"おかいけい",r:"okaikei",de:"Rechnung",t:"food"},
+    {jp:"いただきます",r:"itadakimasu",de:"vor dem Essen",t:"food"},
+    {jp:"ごちそうさまでした",r:"gochisousama deshita",de:"nach dem Essen",t:"food"},
+    {jp:"おいしい",r:"oishii",de:"lecker",t:"food"},{jp:"からい",r:"karai",de:"scharf",t:"food"},
+    {jp:"あまい",r:"amai",de:"süß",t:"food"},{jp:"はし",r:"hashi",de:"Stäbchen",t:"food"},
+
+    {jp:"えき",r:"eki",de:"Bahnhof",t:"transport"},{jp:"でんしゃ",r:"densha",de:"Zug",t:"transport"},
+    {jp:"しんかんせん",r:"shinkansen",de:"Shinkansen",t:"transport"},{jp:"ちかてつ",r:"chikatetsu",de:"U-Bahn",t:"transport"},
+    {jp:"バス",r:"basu",de:"Bus",t:"transport"},{jp:"タクシー",r:"takushii",de:"Taxi",t:"transport"},
+    {jp:"くうこう",r:"kuukou",de:"Flughafen",t:"transport"},{jp:"きっぷ",r:"kippu",de:"Fahrkarte",t:"transport"},
+    {jp:"いりぐち",r:"iriguchi",de:"Eingang",t:"transport"},{jp:"でぐち",r:"deguchi",de:"Ausgang",t:"transport"},
+    {jp:"みち",r:"michi",de:"Weg / Straße",t:"transport"},{jp:"みぎ",r:"migi",de:"rechts",t:"transport"},
+    {jp:"ひだり",r:"hidari",de:"links",t:"transport"},{jp:"まっすぐ",r:"massugu",de:"geradeaus",t:"transport"},
+    {jp:"ちかい",r:"chikai",de:"nahe",t:"transport"},{jp:"とおい",r:"tooi",de:"weit",t:"transport"},
+    {jp:"つぎ",r:"tsugi",de:"nächste/r",t:"transport"},{jp:"まえ",r:"mae",de:"vor",t:"transport"},
+    {jp:"うしろ",r:"ushiro",de:"hinten",t:"transport"},{jp:"うえ",r:"ue",de:"oben",t:"transport"},
+    {jp:"した",r:"shita",de:"unten",t:"transport"},{jp:"なか",r:"naka",de:"drinnen",t:"transport"},
+    {jp:"そと",r:"soto",de:"draußen",t:"transport"},{jp:"どこ",r:"doko",de:"wo",t:"transport"},
+    {jp:"ここ",r:"koko",de:"hier",t:"transport"},{jp:"そこ",r:"soko",de:"dort",t:"transport"},
+    {jp:"あそこ",r:"asoko",de:"dort drüben",t:"transport"},{jp:"ちず",r:"chizu",de:"Karte",t:"transport"},
+    {jp:"じゅうしょ",r:"juusho",de:"Adresse",t:"transport"},
+
+    {jp:"おみせ",r:"omise",de:"Laden",t:"shopping"},{jp:"スーパー",r:"suupaa",de:"Supermarkt",t:"shopping"},
+    {jp:"コンビニ",r:"konbini",de:"Konbini",t:"shopping"},{jp:"おかね",r:"okane",de:"Geld",t:"shopping"},
+    {jp:"えん",r:"en",de:"Yen",t:"shopping"},{jp:"げんきん",r:"genkin",de:"Bargeld",t:"shopping"},
+    {jp:"カード",r:"kaado",de:"Karte",t:"shopping"},{jp:"レシート",r:"reshiito",de:"Quittung",t:"shopping"},
+    {jp:"ねだん",r:"nedan",de:"Preis",t:"shopping"},{jp:"たかい",r:"takai",de:"teuer",t:"shopping"},
+    {jp:"やすい",r:"yasui",de:"billig",t:"shopping"},{jp:"おおきい",r:"ookii",de:"groß",t:"shopping"},
+    {jp:"ちいさい",r:"chiisai",de:"klein",t:"shopping"},{jp:"あたらしい",r:"atarashii",de:"neu",t:"shopping"},
+    {jp:"ふるい",r:"furui",de:"alt",t:"shopping"},{jp:"あか",r:"aka",de:"rot",t:"shopping"},
+    {jp:"あお",r:"ao",de:"blau",t:"shopping"},{jp:"くろ",r:"kuro",de:"schwarz",t:"shopping"},
+    {jp:"しろ",r:"shiro",de:"weiß",t:"shopping"},{jp:"これ",r:"kore",de:"das (hier)",t:"shopping"},
+    {jp:"それ",r:"sore",de:"das (bei dir)",t:"shopping"},{jp:"あれ",r:"are",de:"das (dort)",t:"shopping"},
+    {jp:"いくら",r:"ikura",de:"wieviel",t:"shopping"},{jp:"おみやげ",r:"omiyage",de:"Souvenir",t:"shopping"},
+    {jp:"うりきれ",r:"urikire",de:"ausverkauft",t:"shopping"},{jp:"むりょう",r:"muryou",de:"kostenlos",t:"shopping"},
+
+    {jp:"ホテル",r:"hoteru",de:"Hotel",t:"hotel"},{jp:"りょかん",r:"ryokan",de:"Gasthaus",t:"hotel"},
+    {jp:"へや",r:"heya",de:"Zimmer",t:"hotel"},{jp:"よやく",r:"yoyaku",de:"Reservierung",t:"hotel"},
+    {jp:"チェックイン",r:"chekku in",de:"Check-in",t:"hotel"},{jp:"かぎ",r:"kagi",de:"Schlüssel",t:"hotel"},
+    {jp:"パスポート",r:"pasupooto",de:"Pass",t:"hotel"},{jp:"ちょうしょく",r:"choushoku",de:"Frühstück",t:"hotel"},
+    {jp:"おふろ",r:"ofuro",de:"Bad",t:"hotel"},{jp:"おんせん",r:"onsen",de:"heiße Quelle",t:"hotel"},
+    {jp:"トイレ",r:"toire",de:"Toilette",t:"hotel"},{jp:"おてあらい",r:"otearai",de:"Toilette (höflich)",t:"hotel"},
+    {jp:"ベッド",r:"beddo",de:"Bett",t:"hotel"},{jp:"ふとん",r:"futon",de:"Futon",t:"hotel"},
+    {jp:"エアコン",r:"eakon",de:"Klimaanlage",t:"hotel"},{jp:"ワイファイ",r:"waifai",de:"WLAN",t:"hotel"},
+
+    {jp:"びょういん",r:"byouin",de:"Krankenhaus",t:"emergency"},{jp:"いしゃ",r:"isha",de:"Arzt",t:"emergency"},
+    {jp:"くすり",r:"kusuri",de:"Medikament",t:"emergency"},{jp:"ねつ",r:"netsu",de:"Fieber",t:"emergency"},
+    {jp:"ずつう",r:"zutsuu",de:"Kopfschmerzen",t:"emergency"},{jp:"おなか",r:"onaka",de:"Bauch",t:"emergency"},
+    {jp:"いたい",r:"itai",de:"es tut weh",t:"emergency"},{jp:"アレルギー",r:"arerugii",de:"Allergie",t:"emergency"},
+    {jp:"きゅうきゅうしゃ",r:"kyuukyuusha",de:"Krankenwagen",t:"emergency"},
+    {jp:"けいさつ",r:"keisatsu",de:"Polizei",t:"emergency"},{jp:"たすけて",r:"tasukete",de:"Hilfe!",t:"emergency"},
+    {jp:"あぶない",r:"abunai",de:"gefährlich",t:"emergency"},{jp:"きけん",r:"kiken",de:"Gefahr",t:"emergency"},
+    {jp:"だいじょうぶ",r:"daijoubu",de:"alles gut",t:"emergency"},
+    {jp:"たいしかん",r:"taishikan",de:"Botschaft",t:"emergency"},
+    {jp:"でんわ",r:"denwa",de:"Telefon",t:"emergency"},
+
+    {jp:"てんき",r:"tenki",de:"Wetter",t:"weather"},{jp:"はれ",r:"hare",de:"sonnig",t:"weather"},
+    {jp:"くもり",r:"kumori",de:"bewölkt",t:"weather"},{jp:"あめ",r:"ame",de:"Regen",t:"weather"},
+    {jp:"ゆき",r:"yuki",de:"Schnee",t:"weather"},{jp:"あつい",r:"atsui",de:"heiß",t:"weather"},
+    {jp:"さむい",r:"samui",de:"kalt",t:"weather"},{jp:"はる",r:"haru",de:"Frühling",t:"weather"},
+    {jp:"なつ",r:"natsu",de:"Sommer",t:"weather"},{jp:"あき",r:"aki",de:"Herbst",t:"weather"},
+    {jp:"ふゆ",r:"fuyu",de:"Winter",t:"weather"},{jp:"さくら",r:"sakura",de:"Kirschblüte",t:"weather"},
+    {jp:"やま",r:"yama",de:"Berg",t:"weather"},{jp:"うみ",r:"umi",de:"Meer",t:"weather"},
+    {jp:"かわ",r:"kawa",de:"Fluss",t:"weather"},
+
+    {jp:"ドイツ",r:"doitsu",de:"Deutschland",t:"smalltalk"},{jp:"ドイツじん",r:"doitsujin",de:"Deutsche/r",t:"smalltalk"},
+    {jp:"にほん",r:"nihon",de:"Japan",t:"smalltalk"},{jp:"にほんじん",r:"nihonjin",de:"Japaner/in",t:"smalltalk"},
+    {jp:"にほんご",r:"nihongo",de:"Japanisch",t:"smalltalk"},{jp:"えいご",r:"eigo",de:"Englisch",t:"smalltalk"},
+    {jp:"ドイツご",r:"doitsugo",de:"Deutsch",t:"smalltalk"},{jp:"しごと",r:"shigoto",de:"Beruf",t:"smalltalk"},
+    {jp:"しゅみ",r:"shumi",de:"Hobby",t:"smalltalk"},{jp:"おんがく",r:"ongaku",de:"Musik",t:"smalltalk"},
+    {jp:"えいが",r:"eiga",de:"Film",t:"smalltalk"},{jp:"ほん",r:"hon",de:"Buch",t:"smalltalk"},
+    {jp:"スポーツ",r:"supootsu",de:"Sport",t:"smalltalk"},{jp:"りょこう",r:"ryokou",de:"Reise",t:"smalltalk"},
+    {jp:"しゃしん",r:"shashin",de:"Foto",t:"smalltalk"},{jp:"すき",r:"suki",de:"mögen",t:"smalltalk"},
+    {jp:"きらい",r:"kirai",de:"nicht mögen",t:"smalltalk"},{jp:"たのしい",r:"tanoshii",de:"spaßig",t:"smalltalk"},
+    {jp:"おもしろい",r:"omoshiroi",de:"interessant",t:"smalltalk"},{jp:"すごい",r:"sugoi",de:"toll",t:"smalltalk"},
+    {jp:"きれい",r:"kirei",de:"schön",t:"smalltalk"},
+
+    {jp:"いえ",r:"ie",de:"Haus",t:"city"},{jp:"まち",r:"machi",de:"Stadt",t:"city"},
+    {jp:"ぎんこう",r:"ginkou",de:"Bank",t:"city"},{jp:"ゆうびんきょく",r:"yuubinkyoku",de:"Post",t:"city"},
+    {jp:"おてら",r:"otera",de:"Tempel",t:"city"},{jp:"じんじゃ",r:"jinja",de:"Schrein",t:"city"},
+    {jp:"おしろ",r:"oshiro",de:"Burg",t:"city"},{jp:"こうえん",r:"kouen",de:"Park",t:"city"},
+    {jp:"はくぶつかん",r:"hakubutsukan",de:"Museum",t:"city"},
+
+    {jp:"いきます",r:"ikimasu",de:"gehen",t:"verbs"},{jp:"きます",r:"kimasu",de:"kommen",t:"verbs"},
+    {jp:"かえります",r:"kaerimasu",de:"nach Hause gehen",t:"verbs"},{jp:"はいります",r:"hairimasu",de:"hineingehen",t:"verbs"},
+    {jp:"でます",r:"demasu",de:"hinausgehen",t:"verbs"},{jp:"のります",r:"norimasu",de:"einsteigen",t:"verbs"},
+    {jp:"おります",r:"orimasu",de:"aussteigen",t:"verbs"},{jp:"まちます",r:"machimasu",de:"warten",t:"verbs"},
+    {jp:"たべます",r:"tabemasu",de:"essen",t:"verbs"},{jp:"のみます",r:"nomimasu",de:"trinken",t:"verbs"},
+    {jp:"はらいます",r:"haraimasu",de:"bezahlen",t:"verbs"},{jp:"はなします",r:"hanashimasu",de:"sprechen",t:"verbs"},
+    {jp:"ききます",r:"kikimasu",de:"hören / fragen",t:"verbs"},{jp:"いいます",r:"iimasu",de:"sagen",t:"verbs"},
+    {jp:"よみます",r:"yomimasu",de:"lesen",t:"verbs"},{jp:"かきます",r:"kakimasu",de:"schreiben",t:"verbs"},
+    {jp:"わかります",r:"wakarimasu",de:"verstehen",t:"verbs"},{jp:"します",r:"shimasu",de:"machen",t:"verbs"},
+    {jp:"みます",r:"mimasu",de:"sehen",t:"verbs"},{jp:"かいます",r:"kaimasu",de:"kaufen",t:"verbs"},
+    {jp:"つかいます",r:"tsukaimasu",de:"benutzen",t:"verbs"},{jp:"あります",r:"arimasu",de:"es gibt (Dinge)",t:"verbs"},
+    {jp:"います",r:"imasu",de:"es gibt (Lebewesen)",t:"verbs"},{jp:"おもいます",r:"omoimasu",de:"denken",t:"verbs"},
+    {jp:"さがします",r:"sagashimasu",de:"suchen",t:"verbs"},{jp:"よやくします",r:"yoyaku shimasu",de:"reservieren",t:"verbs"},
+    {jp:"ねます",r:"nemasu",de:"schlafen",t:"verbs"},{jp:"おきます",r:"okimasu",de:"aufstehen",t:"verbs"},
+    {jp:"あるきます",r:"arukimasu",de:"laufen",t:"verbs"},{jp:"とります",r:"torimasu",de:"Foto machen",t:"verbs"}
+];
+
+const KANJI_BLOCKS = [
+    {id:"numbers",name:"Zahlen"},{id:"time",name:"Zeit"},{id:"directions",name:"Wege"},
+    {id:"menu",name:"Speisekarte"},{id:"shopping",name:"Einkaufen"},{id:"hotel",name:"Hotel"},
+    {id:"emergency",name:"Notfall"},{id:"general",name:"Allgemein"}
+];
+
+const KANJI_DATA = [
+    {k:"一",m:"eins",rd:"ichi",ex:"一人 (hitori)",b:"numbers"},{k:"二",m:"zwei",rd:"ni",ex:"二月 (Februar)",b:"numbers"},
+    {k:"三",m:"drei",rd:"san",ex:"三日 (mikka)",b:"numbers"},{k:"四",m:"vier",rd:"shi/yon",ex:"四時 (yoji)",b:"numbers"},
+    {k:"五",m:"fünf",rd:"go",ex:"五人 (gonin)",b:"numbers"},{k:"六",m:"sechs",rd:"roku",ex:"六月 (Juni)",b:"numbers"},
+    {k:"七",m:"sieben",rd:"shichi/nana",ex:"七時 (shichiji)",b:"numbers"},{k:"八",m:"acht",rd:"hachi",ex:"八月 (August)",b:"numbers"},
+    {k:"九",m:"neun",rd:"kyuu/ku",ex:"九時 (kuji)",b:"numbers"},{k:"十",m:"zehn",rd:"juu",ex:"十円 (10 Yen)",b:"numbers"},
+    {k:"百",m:"hundert",rd:"hyaku",ex:"三百円 (300 Yen)",b:"numbers"},{k:"千",m:"tausend",rd:"sen",ex:"千円 (1000 Yen)",b:"numbers"},
+    {k:"万",m:"zehntausend",rd:"man",ex:"一万円 (10000 Yen)",b:"numbers"},{k:"円",m:"Yen",rd:"en",ex:"五百円 (500 Yen)",b:"numbers"},
+
+    {k:"日",m:"Tag / Sonne",rd:"nichi/hi",ex:"日本 (Japan)",b:"time"},{k:"月",m:"Monat / Mond",rd:"gatsu/tsuki",ex:"一月",b:"time"},
+    {k:"火",m:"Feuer",rd:"ka",ex:"火曜日 (Di)",b:"time"},{k:"水",m:"Wasser",rd:"sui/mizu",ex:"水曜日 (Mi)",b:"time"},
+    {k:"木",m:"Baum / Holz",rd:"moku/ki",ex:"木曜日 (Do)",b:"time"},{k:"金",m:"Gold / Geld",rd:"kin",ex:"金曜日 (Fr)",b:"time"},
+    {k:"土",m:"Erde",rd:"do",ex:"土曜日 (Sa)",b:"time"},{k:"年",m:"Jahr",rd:"nen",ex:"来年 (rainen)",b:"time"},
+    {k:"時",m:"Stunde",rd:"ji",ex:"三時 (sanji)",b:"time"},{k:"分",m:"Minute",rd:"fun/pun",ex:"五分 (gofun)",b:"time"},
+    {k:"半",m:"Hälfte",rd:"han",ex:"三時半 (sanji han)",b:"time"},{k:"今",m:"jetzt",rd:"ima",ex:"今日 (kyou)",b:"time"},
+
+    {k:"駅",m:"Bahnhof",rd:"eki",ex:"東京駅",b:"directions"},{k:"電",m:"Strom",rd:"den",ex:"電車 (Zug)",b:"directions"},
+    {k:"車",m:"Auto",rd:"sha/kuruma",ex:"電車 (densha)",b:"directions"},{k:"入",m:"hinein",rd:"hai",ex:"入口 (Eingang)",b:"directions"},
+    {k:"出",m:"hinaus",rd:"de/shutsu",ex:"出口 (Ausgang)",b:"directions"},{k:"口",m:"Mund / Öffnung",rd:"guchi",ex:"入口/出口",b:"directions"},
+    {k:"北",m:"Norden",rd:"kita",ex:"北口",b:"directions"},{k:"南",m:"Süden",rd:"minami",ex:"南口",b:"directions"},
+    {k:"東",m:"Osten",rd:"higashi/tou",ex:"東京",b:"directions"},{k:"西",m:"Westen",rd:"nishi/sei",ex:"西口",b:"directions"},
+    {k:"中",m:"Mitte",rd:"naka/chuu",ex:"中央 (chuuou)",b:"directions"},{k:"大",m:"groß",rd:"dai/oo",ex:"大きい",b:"directions"},
+    {k:"小",m:"klein",rd:"shou/chii",ex:"小さい",b:"directions"},{k:"上",m:"oben",rd:"jou/ue",ex:"上り (nobori)",b:"directions"},
+    {k:"下",m:"unten",rd:"ka/shita",ex:"下り (kudari)",b:"directions"},{k:"行",m:"gehen",rd:"i/kou",ex:"行きます",b:"directions"},
+
+    {k:"食",m:"essen",rd:"shoku/ta",ex:"食べる",b:"menu"},{k:"飲",m:"trinken",rd:"no/in",ex:"飲み物",b:"menu"},
+    {k:"物",m:"Ding",rd:"mono/butsu",ex:"食べ物",b:"menu"},{k:"肉",m:"Fleisch",rd:"niku",ex:"牛肉",b:"menu"},
+    {k:"魚",m:"Fisch",rd:"sakana/gyo",ex:"魚屋",b:"menu"},{k:"米",m:"Reis (ungekocht)",rd:"bei/kome",ex:"お米",b:"menu"},
+    {k:"茶",m:"Tee",rd:"cha",ex:"お茶",b:"menu"},{k:"牛",m:"Rind",rd:"gyuu",ex:"牛丼",b:"menu"},
+    {k:"豚",m:"Schwein",rd:"buta/ton",ex:"豚肉",b:"menu"},{k:"鶏",m:"Huhn",rd:"tori/kei",ex:"鶏肉",b:"menu"},
+    {k:"卵",m:"Ei",rd:"tamago",ex:"生卵",b:"menu"},
+
+    {k:"店",m:"Laden",rd:"ten/mise",ex:"お店",b:"shopping"},{k:"屋",m:"Laden (Suffix)",rd:"ya",ex:"本屋",b:"shopping"},
+    {k:"本",m:"Buch",rd:"hon",ex:"日本",b:"shopping"},{k:"高",m:"hoch / teuer",rd:"taka/kou",ex:"高い (takai)",b:"shopping"},
+    {k:"安",m:"billig",rd:"yasu/an",ex:"安い (yasui)",b:"shopping"},{k:"新",m:"neu",rd:"shin/atara",ex:"新しい",b:"shopping"},
+    {k:"古",m:"alt",rd:"furu/ko",ex:"古い (furui)",b:"shopping"},{k:"男",m:"Mann",rd:"otoko/dan",ex:"男性 (Toilette)",b:"shopping"},
+    {k:"女",m:"Frau",rd:"onna/jo",ex:"女性 (Toilette)",b:"shopping"},
+
+    {k:"宿",m:"Unterkunft",rd:"yado/shuku",ex:"民宿",b:"hotel"},{k:"部",m:"Teil",rd:"bu",ex:"部屋 (heya)",b:"hotel"},
+    {k:"室",m:"Raum",rd:"shitsu",ex:"浴室",b:"hotel"},{k:"浴",m:"Bad",rd:"yoku",ex:"浴室",b:"hotel"},
+    {k:"名",m:"Name",rd:"na/mei",ex:"名前 (namae)",b:"hotel"},{k:"前",m:"vor",rd:"zen/mae",ex:"名前",b:"hotel"},
+
+    {k:"病",m:"Krankheit",rd:"byou",ex:"病院",b:"emergency"},{k:"院",m:"Institution",rd:"in",ex:"病院",b:"emergency"},
+    {k:"医",m:"Arzt",rd:"i",ex:"医者 (isha)",b:"emergency"},{k:"薬",m:"Medikament",rd:"kusuri/yaku",ex:"薬局",b:"emergency"},
+    {k:"痛",m:"Schmerz",rd:"ita/tsuu",ex:"痛い (itai)",b:"emergency"},{k:"頭",m:"Kopf",rd:"atama/zu",ex:"頭痛",b:"emergency"},
+    {k:"手",m:"Hand",rd:"te/shu",ex:"お手洗い",b:"emergency"},{k:"足",m:"Fuß",rd:"ashi/soku",ex:"足が痛い",b:"emergency"},
+    {k:"危",m:"Gefahr",rd:"ki/abu",ex:"危ない (abunai)",b:"emergency"},{k:"注",m:"Achtung",rd:"chuu",ex:"注意",b:"emergency"},
+    {k:"意",m:"Absicht",rd:"i",ex:"注意 (chuui)",b:"emergency"},{k:"警",m:"Polizei",rd:"kei",ex:"警察",b:"emergency"},
+
+    {k:"人",m:"Person",rd:"jin/hito",ex:"日本人",b:"general"},{k:"国",m:"Land",rd:"koku/kuni",ex:"外国",b:"general"},
+    {k:"何",m:"was",rd:"nani/nan",ex:"何ですか",b:"general"},{k:"言",m:"sagen",rd:"gen/i",ex:"言葉",b:"general"},
+    {k:"語",m:"Sprache",rd:"go",ex:"日本語",b:"general"},{k:"英",m:"Englisch",rd:"ei",ex:"英語",b:"general"}
+];
+
+/* ============================================================
+   Kapitel-Inhalt (Lernen-Tab) — alle Lernmaterialien inline
+   Wird im Tool angezeigt UND per window.print() für Notability gedruckt.
+   ============================================================ */
+const CHAPTERS = [
+{ id:"plan", num:"零", title:"Lernplan & Roadmap", jp:"計画", body:`
+<h1>日本語 — Lernplan</h1>
+<p><strong>6 Monate · Reise-Fokus · 15–30 Min/Tag</strong></p>
+
+<h2>Dein Ziel</h2>
+<p>In 26 Wochen souverän eine Reise durch Japan auf Japanisch bestreiten: bestellen, bezahlen, navigieren, im Hotel einchecken, im Notfall verständlich machen, Smalltalk halten — alles ohne Romaji-Krücke.</p>
+
+<blockquote>
+<strong>Erste Regel:</strong> Schriftzeichen vor Vokabeln. Wer mit Romaji startet, verlernt es nie.<br>
+<strong>Zweite Regel:</strong> Lieber 15 Minuten täglich als 2 Stunden am Wochenende.<br>
+<strong>Dritte Regel:</strong> Streak vor Perfektion.
+</blockquote>
+
+<h2>Phase 1 — Schrift-Fundament (W1–8)</h2>
+<ul>
+<li><strong>W1–3 Hiragana</strong> (alle 46 + Dakuten + Yōon) — eine Reihe pro Tag</li>
+<li><strong>W4–5 Katakana</strong> — gleiches Schema, geht schneller</li>
+<li><strong>W6–8 Übergang</strong> — erste 100 Vokabeln in Kana, Basis-Grammatik (です/ます, は-Partikel)</li>
+</ul>
+<p><strong>Meilensteine:</strong> Ende W5 Kana flüssig · Ende W8 sich vorstellen, bis 100 zählen.</p>
+
+<h2>Phase 2 — Reise-Basics + erste Kanji (W9–17)</h2>
+<ul>
+<li><strong>W9–11 Restaurant</strong> — 80 Vokabeln, 15 Kanji (一二三, 円, 水, 食, 人 …)</li>
+<li><strong>W12–14 Verkehr</strong> — 80 Vokabeln, 15 Kanji (駅, 北南東西, 入口/出口 …)</li>
+<li><strong>W15–17 Einkaufen</strong> — 80 Vokabeln, 10 Kanji</li>
+</ul>
+<p><strong>Meilensteine:</strong> Speisekarte halb verstehen · Bahnticket kaufen · nach dem Weg fragen.</p>
+
+<h2>Phase 3 — Vertiefung (W18–26)</h2>
+<ul>
+<li><strong>W18–20 Hotel & Höflichkeit</strong> — ください, おねがいします</li>
+<li><strong>W21–23 Notfall & Gesundheit</strong> — 60 Vokabeln, 20 Kanji</li>
+<li><strong>W24–26 Smalltalk + Wiederholung</strong></li>
+</ul>
+<p><strong>Endmeilenstein W26:</strong> 5-Minuten-Reisekonversation ohne Notizen.</p>
+
+<h2>Tagesroutine (20 Min)</h2>
+<table>
+<tr><th>Zeit</th><th>Aktivität</th></tr>
+<tr><td>5 Min</td><td>Schriftzeichen-Drill (Tab 仮名 / 漢字)</td></tr>
+<tr><td>5 Min</td><td>Duolingo Tagesziel</td></tr>
+<tr><td>5–10 Min</td><td>Aktuelles Wochenmodul lesen, in Notability annotieren</td></tr>
+<tr><td>Sonntag</td><td>Tracker (進捗) abhaken, Wochenreflexion</td></tr>
+</table>
+
+<h2>Lernregeln, die wirklich helfen</h2>
+<ol>
+<li><strong>Tägliche Wiederholung schlägt lange Sessions.</strong></li>
+<li><strong>Aktiv abrufen</strong> (Quiz, Karteikarten), nicht passiv lesen.</li>
+<li><strong>Schreiben hilft</strong> — mit Pencil in Notability nachzeichnen.</li>
+<li><strong>Verfehlte Tage nicht aufholen</strong> — heute starten, nicht gestern nachholen.</li>
+<li><strong>Sprich laut.</strong> Auch wenn dich keiner hört.</li>
+<li><strong>Akzeptiere, schlecht zu sein.</strong> Sechs Monate sind kurz.</li>
+</ol>
+
+<h2>Notfallplan bei Demotivation</h2>
+<ul>
+<li>2 Tage gefehlt? → Heute nur 5 Min Drill.</li>
+<li>1 Woche gefehlt? → Wochenmodul um 1 Woche verschieben.</li>
+<li>2+ Wochen gefehlt? → Tempo halbieren statt aufgeben.</li>
+</ul>
+
+<p style="margin-top:2rem; font-family:var(--font-jp); font-size:1.2rem; color:var(--ai)">がんばってください — Ganbatte kudasai.</p>
+` },
+
+{ id:"einstieg", num:"一", title:"Einstieg — Tag 1 bis 14", jp:"入門", body:`
+<h1>入門 — Deine ersten 14 Tage</h1>
+<p>Du musst nichts vorbereiten. Mach jeden Tag, was unten steht. 3 Aufgaben pro Tag, 15–25 Min gesamt.</p>
+
+<h2>Woche 1 — あ-Reihe und か-Reihe</h2>
+
+<h3>Tag 1</h3>
+<ol>
+<li>Tab "Lernen" → Plan & Roadmap einmal überfliegen (5 Min).</li>
+<li>Tab "Kana" → System ひらがな, Reihe あ — lerne あ・い・う・え・お (5 Min).</li>
+<li>In Notability: Hiragana-PDF importieren, jedes der 5 Zeichen 3× nachschreiben.</li>
+</ol>
+
+<h3>Tag 2</h3>
+<ol>
+<li>Tab "Kana" → Review von gestern (3 Min).</li>
+<li>Neue Reihe か・き・く・け・こ (5 Min).</li>
+<li>In Notability nachschreiben.</li>
+</ol>
+
+<h3>Tag 3</h3>
+<ol>
+<li>Tab "Kana" → Review beider Reihen (5 Min).</li>
+<li>Mixed-Drill あ + か Reihe (5 Min).</li>
+<li>Duolingo-Tagesziel.</li>
+</ol>
+
+<h3>Tag 4</h3>
+<ol>
+<li>Neue Reihe さ・し・す・せ・そ.</li>
+<li>In Notability nachschreiben.</li>
+<li>Tab "Kana" → Mixed-Drill aller 3 Reihen.</li>
+</ol>
+
+<h3>Tag 5 — Review-Tag</h3>
+<ol>
+<li>Keine neue Reihe.</li>
+<li>10 Min Mixed-Drill der bisherigen 15 Zeichen.</li>
+<li>Notiere, welche Zeichen du oft verwechselst.</li>
+</ol>
+
+<h3>Tag 6</h3>
+<ol>
+<li>Neue Reihe た・ち・つ・て・と.</li>
+<li>Achte auf <strong>つ</strong> (Tsunamiwelle) — wird oft mit <strong>し</strong> verwechselt.</li>
+<li>In Notability nachschreiben.</li>
+</ol>
+
+<h3>Tag 7 — Sonntag, Wochenreview</h3>
+<ol>
+<li>Tab "Kana" → Mixed-Drill aller 20 Zeichen, Ziel 90 % richtig.</li>
+<li>Tab "Tracker" → Woche 1 abhaken.</li>
+<li><strong>Belohnung:</strong> Konbini-Style-Snack zum Wochenabschluss.</li>
+</ol>
+
+<h2>Woche 2 — な, は, ま, や Reihe</h2>
+
+<h3>Tag 8</h3>
+<ol>
+<li>な・に・ぬ・ね・の.</li>
+<li>Notability nachschreiben.</li>
+<li>Mixed-Drill mit den ersten 4 Reihen.</li>
+</ol>
+
+<h3>Tag 9</h3>
+<ol>
+<li>は・ひ・ふ・へ・ほ.</li>
+<li><div class="warn"><strong>は</strong> wird als Partikel "wa" gelesen, sonst "ha". <strong>へ</strong> als Partikel "e", sonst "he". Wirst du in W7 brauchen.</div></li>
+<li>Mixed-Drill.</li>
+</ol>
+
+<h3>Tag 10</h3>
+<ol><li>ま・み・む・め・も.</li><li>Notability.</li><li>Mixed-Drill aller 30 Zeichen — Ziel: in unter 2 Min durch.</li></ol>
+
+<h3>Tag 11</h3>
+<ol><li>や・ゆ・よ (nur 3 Zeichen).</li><li>Bonus: kleine ゃ ゅ ょ angucken (Yōon — kommen in W3).</li><li>Mixed-Drill.</li></ol>
+
+<h3>Tag 12 — Review</h3>
+<ol><li>Keine neue Reihe.</li><li>10 Min Mixed-Drill, Ziel 95 % richtig.</li><li>Schwierige Zeichen (ぬ/ね/の) gezielt drillen.</li></ol>
+
+<h3>Tag 13</h3>
+<ol><li>ら・り・る・れ・ろ.</li><li>Notability nachschreiben.</li><li>Mixed-Drill.</li></ol>
+
+<h3>Tag 14 — Sonntag</h3>
+<ol><li>わ・を・ん — die letzten 3!</li><li>Großer Mixed-Drill aller 46 Zeichen.</li><li>Tracker: Woche 2 ab. <strong>Hiragana grundständig durch!</strong></li></ol>
+
+<h2>Was kommt danach</h2>
+<ul>
+<li><strong>Woche 3:</strong> Dakuten (が ざ だ ば) + Handakuten (ぱ) + Yōon (きゃ しゅ ちょ).</li>
+<li><strong>Woche 4–5:</strong> Katakana komplett (siehe eigenes Kapitel).</li>
+<li><strong>Woche 6:</strong> Erste Vokabeln — Begrüßungen, Zahlen 1–10.</li>
+<li><strong>Woche 7:</strong> Sich vorstellen, わたしは [Name] です.</li>
+<li><strong>Woche 8:</strong> Familie, Uhrzeit. Erste eigene Konversation im Spiegel.</li>
+</ul>
+<p>Ab W9 bist du in <strong>Phase 2 — Reise-Basics</strong>. Tracker-Tab führt dich Woche für Woche.</p>
+
+<h2>Wenn was schiefgeht</h2>
+<ul>
+<li><em>"Ich vergesse die Zeichen ständig"</em> — normal in W1. Halt durch bis Tag 14, dann sitzt's.</li>
+<li><em>"Heute keine Zeit"</em> — 3 Min Tool-Drill reichen für den Streak.</li>
+<li><em>"ぬ/ね/の/め verwechsle ich"</em> — passiert allen. Eselsbrücken im Hiragana-Kapitel.</li>
+<li><em>"Soll ich Kanji schon lernen?"</em> — Nein. Erst ab Monat 3.</li>
+</ul>
+` },
+
+{ id:"hiragana", num:"二", title:"Hiragana", jp:"平仮名", body:`
+<h1>平仮名 — Hiragana</h1>
+<p>Hiragana ist das japanische Lautalphabet für rein japanische Wörter und grammatische Endungen. 46 Grundzeichen + Modifikationen.</p>
+<blockquote>Lernreihenfolge: A → K → S → T → N → H → M → Y → R → W. Pro Tag eine Reihe (5 Zeichen), am nächsten Tag mit der vorigen mischen.</blockquote>
+
+<h2>あ-Reihe (Vokale)</h2>
+<table>
+<tr><th>Kana</th><th>Romaji</th><th>Eselsbrücke</th></tr>
+<tr><td class="jp">あ</td><td>a</td><td>Apostroph mit Bauch</td></tr>
+<tr><td class="jp">い</td><td>i</td><td>Zwei i-Punkte hochkant</td></tr>
+<tr><td class="jp">う</td><td>u</td><td>Ufer mit Welle</td></tr>
+<tr><td class="jp">え</td><td>e</td><td>Export-Pfeil</td></tr>
+<tr><td class="jp">お</td><td>o</td><td>Staunendes O!</td></tr>
+</table>
+
+<h2>か-Reihe</h2>
+<table>
+<tr><th>Kana</th><th>Romaji</th><th>Eselsbrücke</th></tr>
+<tr><td class="jp">か</td><td>ka</td><td>Kameraobjektiv mit Stativ</td></tr>
+<tr><td class="jp">き</td><td>ki</td><td>Key mit zwei Bartzacken</td></tr>
+<tr><td class="jp">く</td><td>ku</td><td>Kuckuck-Schnabel</td></tr>
+<tr><td class="jp">け</td><td>ke</td><td>Zwei Striche und Kringel</td></tr>
+<tr><td class="jp">こ</td><td>ko</td><td>Zwei Kommas übereinander</td></tr>
+</table>
+
+<h2>さ-Reihe</h2>
+<table>
+<tr><td class="jp">さ</td><td>sa</td><td>Sackmesser</td></tr>
+<tr><td class="jp">し</td><td>shi</td><td>Schilfhalm-Kurve</td></tr>
+<tr><td class="jp">す</td><td>su</td><td>Sushi-Roll mit Schwanz</td></tr>
+<tr><td class="jp">せ</td><td>se</td><td>Segelbootmast</td></tr>
+<tr><td class="jp">そ</td><td>so</td><td>Solarpanel im Zickzack</td></tr>
+</table>
+
+<h2>た-Reihe</h2>
+<table>
+<tr><td class="jp">た</td><td>ta</td><td>Tattoo aus drei Strichen</td></tr>
+<tr><td class="jp">ち</td><td>chi</td><td>Umgedrehte 5</td></tr>
+<tr><td class="jp">つ</td><td>tsu</td><td>Tsunamiwelle, klein</td></tr>
+<tr><td class="jp">て</td><td>te</td><td>Teppich mit Quaste</td></tr>
+<tr><td class="jp">と</td><td>to</td><td>Torii-Pfahl</td></tr>
+</table>
+<div class="warn"><strong>つ vs し:</strong> つ ist horizontal, し vertikal mit Haken.</div>
+
+<h2>な-Reihe</h2>
+<table>
+<tr><td class="jp">な</td><td>na</td><td>Nadel mit Faden</td></tr>
+<tr><td class="jp">に</td><td>ni</td><td>Niet mit Streben</td></tr>
+<tr><td class="jp">ぬ</td><td>nu</td><td>Noodle mit Schleife</td></tr>
+<tr><td class="jp">ね</td><td>ne</td><td>Nest mit Schwanz</td></tr>
+<tr><td class="jp">の</td><td>no</td><td>No-Auto-Symbol</td></tr>
+</table>
+<div class="warn"><strong>ぬ ね の め</strong> ähneln sich. Eselsbrücke: <strong>N</strong>oodle, <strong>N</strong>est, <strong>N</strong>o, <strong>M</strong>eat. Schwanzform unterscheidet.</div>
+
+<h2>は-Reihe</h2>
+<table>
+<tr><td class="jp">は</td><td>ha</td><td>Haus mit zwei Säulen</td></tr>
+<tr><td class="jp">ひ</td><td>hi</td><td>Hi-Lächeln</td></tr>
+<tr><td class="jp">ふ</td><td>fu</td><td>Fuji-Silhouette</td></tr>
+<tr><td class="jp">へ</td><td>he</td><td>Helmgipfel</td></tr>
+<tr><td class="jp">ほ</td><td>ho</td><td>Wie は + Strich oben</td></tr>
+</table>
+<div class="warn"><strong>は</strong> als Partikel = "wa", sonst "ha". <strong>へ</strong> als Partikel = "e", sonst "he".</div>
+
+<h2>ま-Reihe</h2>
+<table>
+<tr><td class="jp">ま</td><td>ma</td><td>Marionettenfaden</td></tr>
+<tr><td class="jp">み</td><td>mi</td><td>Miniatur-Schnörkel</td></tr>
+<tr><td class="jp">む</td><td>mu</td><td>Muuh — Kuh mit Hörnern</td></tr>
+<tr><td class="jp">め</td><td>me</td><td>Messauge</td></tr>
+<tr><td class="jp">も</td><td>mo</td><td>Mobile mit Querstange</td></tr>
+</table>
+
+<h2>や / ら / わ-Reihen</h2>
+<table>
+<tr><td class="jp">や</td><td>ya</td><td>Yacht-Anker</td></tr>
+<tr><td class="jp">ゆ</td><td>yu</td><td>Yurte mit Pfosten</td></tr>
+<tr><td class="jp">よ</td><td>yo</td><td>Yoga-Pose, vertikales L</td></tr>
+<tr><td class="jp">ら</td><td>ra</td><td>Rabbit mit Schnörkel</td></tr>
+<tr><td class="jp">り</td><td>ri</td><td>River — zwei Striche</td></tr>
+<tr><td class="jp">る</td><td>ru</td><td>Runde Schleife</td></tr>
+<tr><td class="jp">れ</td><td>re</td><td>Rechts-Kringel</td></tr>
+<tr><td class="jp">ろ</td><td>ro</td><td>Roller, offen</td></tr>
+<tr><td class="jp">わ</td><td>wa</td><td>Wassertropfen</td></tr>
+<tr><td class="jp">を</td><td>wo / o</td><td>Selten — Akkusativ-Partikel. Windrad.</td></tr>
+<tr><td class="jp">ん</td><td>n</td><td>Konsonant ohne Vokal</td></tr>
+</table>
+<div class="warn"><strong>る vs ろ:</strong> る hat Schleife, ろ ist offen. <strong>れ vs ね:</strong> れ rechts offen, ね Schleife.</div>
+
+<h2>Dakuten ゛ und Handakuten ゜</h2>
+<p>Striche/Kringel oben rechts wandeln den Klang:</p>
+<table>
+<tr><th>Original</th><th>Dakuten</th><th>Klang</th></tr>
+<tr><td class="jp">か き く け こ</td><td class="jp">が ぎ ぐ げ ご</td><td>ka → ga</td></tr>
+<tr><td class="jp">さ し す せ そ</td><td class="jp">ざ じ ず ぜ ぞ</td><td>sa → za, shi → ji</td></tr>
+<tr><td class="jp">た ち つ て と</td><td class="jp">だ ぢ づ で ど</td><td>ta → da</td></tr>
+<tr><td class="jp">は ひ ふ へ ほ</td><td class="jp">ば び ぶ べ ぼ</td><td>ha → ba</td></tr>
+<tr><td class="jp">は ひ ふ へ ほ</td><td class="jp">ぱ ぴ ぷ ぺ ぽ</td><td>ha → pa (Handakuten ゜)</td></tr>
+</table>
+
+<h2>Yōon — Kombinationen mit kleinem ゃ ゅ ょ</h2>
+<p>Großes Zeichen + kleines や/ゆ/よ verschmilzt zu einer Silbe:</p>
+<table>
+<tr><th>Beispiel</th><th>Romaji</th><th>Hinweis</th></tr>
+<tr><td class="jp">きゃ</td><td>kya</td><td>kyabetsu = Kohl</td></tr>
+<tr><td class="jp">しゅ</td><td>shu</td><td>shumi = Hobby</td></tr>
+<tr><td class="jp">ちょ</td><td>cho</td><td>chotto = ein bisschen</td></tr>
+<tr><td class="jp">にゃ</td><td>nya</td><td>nyaa = miau</td></tr>
+<tr><td class="jp">りゅ</td><td>ryu</td><td>ryuu = Drache</td></tr>
+</table>
+<p>Das ゃゅょ ist <strong>kleiner</strong> als normal — sonst wären es zwei Silben (kiya statt kya).</p>
+
+<h2>Kleines っ und Langvokale</h2>
+<ul>
+<li>Kleines <strong>っ</strong> verdoppelt den folgenden Konsonanten: いっぱい <em>ippai</em>, きって <em>kitte</em>.</li>
+<li>Langvokal in Hiragana = passendes Vokal-Kana wiederholen: おかあさん <em>okaasan</em>, きょう <em>kyou</em>.</li>
+</ul>
+` },
+
+{ id:"katakana", num:"三", title:"Katakana", jp:"片仮名", body:`
+<h1>片仮名 — Katakana</h1>
+<p>Katakana wird für <strong>Lehnwörter</strong>, Eigennamen aus dem Ausland, Onomatopoesie und Hervorhebung verwendet.</p>
+<blockquote>Auf Speisekarten, Schildern, in Konbinis siehst du Katakana täglich. Beispiele: ビール (biiru — Bier), ラーメン (raamen), タクシー (takushii — Taxi).</blockquote>
+
+<h2>ア-Reihe</h2>
+<table>
+<tr><th>Kana</th><th>Romaji</th><th>Hilfe</th></tr>
+<tr><td class="jp">ア</td><td>a</td><td>Attention-Pfeil</td></tr>
+<tr><td class="jp">イ</td><td>i</td><td>Zwei vertikale Striche</td></tr>
+<tr><td class="jp">ウ</td><td>u</td><td>Dach mit Punkt</td></tr>
+<tr><td class="jp">エ</td><td>e</td><td>E rotiert</td></tr>
+<tr><td class="jp">オ</td><td>o</td><td>Kreuz mit Schwanz</td></tr>
+</table>
+
+<h2>カ / サ / タ Reihen</h2>
+<table>
+<tr><td class="jp">カ</td><td>ka</td><td>Karate-Schlag</td></tr>
+<tr><td class="jp">キ</td><td>ki</td><td>Key-Mast</td></tr>
+<tr><td class="jp">ク</td><td>ku</td><td>Klammer</td></tr>
+<tr><td class="jp">ケ</td><td>ke</td><td>Winkliges K</td></tr>
+<tr><td class="jp">コ</td><td>ko</td><td>Eckige Klammer</td></tr>
+<tr><td class="jp">サ</td><td>sa</td><td>Sandglas</td></tr>
+<tr><td class="jp">シ</td><td>shi</td><td>3 Tropfen, hochsteigend</td></tr>
+<tr><td class="jp">ス</td><td>su</td><td>Z-Form</td></tr>
+<tr><td class="jp">セ</td><td>se</td><td>Eckiges Segel</td></tr>
+<tr><td class="jp">ソ</td><td>so</td><td>2 Tropfen, fallend</td></tr>
+<tr><td class="jp">タ</td><td>ta</td><td>Tag-Anhänger</td></tr>
+<tr><td class="jp">チ</td><td>chi</td><td>Cheerleader</td></tr>
+<tr><td class="jp">ツ</td><td>tsu</td><td>3 Tropfen, vertikal</td></tr>
+<tr><td class="jp">テ</td><td>te</td><td>Teleantenne</td></tr>
+<tr><td class="jp">ト</td><td>to</td><td>Torii reduziert</td></tr>
+</table>
+<div class="warn"><strong>シ vs ツ:</strong> シ Striche horizontal, hochziehend. ツ vertikal, herabfallend.<br>
+<strong>ソ vs ン:</strong> ソ von oben nach unten. ン von unten nach oben.</div>
+
+<h2>ナ / ハ / マ Reihen</h2>
+<table>
+<tr><td class="jp">ナ</td><td>na</td><td>Nail mit Querbalken</td></tr>
+<tr><td class="jp">ニ</td><td>ni</td><td>Wie 2</td></tr>
+<tr><td class="jp">ヌ</td><td>nu</td><td>Noodle, sich kreuzend</td></tr>
+<tr><td class="jp">ネ</td><td>ne</td><td>Nest mit Dach</td></tr>
+<tr><td class="jp">ノ</td><td>no</td><td>Ein Strich, schräg</td></tr>
+<tr><td class="jp">ハ</td><td>ha</td><td>Hängende Augenbrauen</td></tr>
+<tr><td class="jp">ヒ</td><td>hi</td><td>Hi! mit Geste</td></tr>
+<tr><td class="jp">フ</td><td>fu</td><td>Fuji-Spitze</td></tr>
+<tr><td class="jp">ヘ</td><td>he</td><td>Wie Hiragana へ</td></tr>
+<tr><td class="jp">ホ</td><td>ho</td><td>Holzkreuz mit Tropfen</td></tr>
+<tr><td class="jp">マ</td><td>ma</td><td>Mauerwinkel</td></tr>
+<tr><td class="jp">ミ</td><td>mi</td><td>3 horizontale Striche</td></tr>
+<tr><td class="jp">ム</td><td>mu</td><td>Muuh-Maul</td></tr>
+<tr><td class="jp">メ</td><td>me</td><td>Messerkreuz</td></tr>
+<tr><td class="jp">モ</td><td>mo</td><td>Moped-Lenker</td></tr>
+</table>
+
+<h2>ヤ / ラ / ワ Reihen</h2>
+<table>
+<tr><td class="jp">ヤ</td><td>ya</td><td>Yacht-Mast</td></tr>
+<tr><td class="jp">ユ</td><td>yu</td><td>Eckiges U</td></tr>
+<tr><td class="jp">ヨ</td><td>yo</td><td>3 spiegelverkehrt</td></tr>
+<tr><td class="jp">ラ</td><td>ra</td><td>Radiowellen</td></tr>
+<tr><td class="jp">リ</td><td>ri</td><td>Zwei vertikale Striche</td></tr>
+<tr><td class="jp">ル</td><td>ru</td><td>Rune mit Schleife</td></tr>
+<tr><td class="jp">レ</td><td>re</td><td>Rechter Winkel</td></tr>
+<tr><td class="jp">ロ</td><td>ro</td><td>Eckiger Kreis</td></tr>
+<tr><td class="jp">ワ</td><td>wa</td><td>Wie ク, unten breiter</td></tr>
+<tr><td class="jp">ヲ</td><td>wo</td><td>Selten — Windrad</td></tr>
+<tr><td class="jp">ン</td><td>n</td><td>Strich von unten nach oben</td></tr>
+</table>
+
+<h2>Langvokale, Dakuten, Yōon</h2>
+<ul>
+<li><strong>Langvokal</strong> in Katakana = Strich <strong>ー</strong>: コーヒー <em>koohii</em>, ビール <em>biiru</em>, スーパー <em>suupaa</em>.</li>
+<li><strong>Dakuten</strong> wie bei Hiragana: カ → ガ, サ → ザ, タ → ダ, ハ → バ, ハ → パ.</li>
+<li><strong>Yōon:</strong> キャ kya, シュ shu, チョ cho.</li>
+<li><strong>Spezialfälle:</strong> ファ fa, フィ fi, ティ ti, ジェ je, チェ che — für Lehnwörter.</li>
+</ul>
+
+<h2>Übungs-Lehnwörter</h2>
+<table>
+<tr><th>Katakana</th><th>Romaji</th><th>Deutsch</th></tr>
+<tr><td class="jp">コーヒー</td><td>koohii</td><td>Kaffee</td></tr>
+<tr><td class="jp">ビール</td><td>biiru</td><td>Bier</td></tr>
+<tr><td class="jp">パン</td><td>pan</td><td>Brot</td></tr>
+<tr><td class="jp">タクシー</td><td>takushii</td><td>Taxi</td></tr>
+<tr><td class="jp">ホテル</td><td>hoteru</td><td>Hotel</td></tr>
+<tr><td class="jp">トイレ</td><td>toire</td><td>Toilette</td></tr>
+<tr><td class="jp">スマホ</td><td>sumaho</td><td>Smartphone</td></tr>
+<tr><td class="jp">アイスクリーム</td><td>aisukuriimu</td><td>Eis</td></tr>
+<tr><td class="jp">レストラン</td><td>resutoran</td><td>Restaurant</td></tr>
+<tr><td class="jp">メニュー</td><td>menyuu</td><td>Menü</td></tr>
+<tr><td class="jp">パスポート</td><td>pasupooto</td><td>Pass</td></tr>
+<tr><td class="jp">ラーメン</td><td>raamen</td><td>Ramen</td></tr>
+<tr><td class="jp">ジュース</td><td>juusu</td><td>Saft</td></tr>
+</table>
+` },
+
+{ id:"grammatik", num:"四", title:"Grammatik", jp:"文法", body:`
+<h1>文法 — Grammatik</h1>
+<p>Das Minimum für Reise-Gespräche. Eine Regel pro Tag, dann sofort 3 eigene Beispielsätze laut sprechen.</p>
+
+<h2>1. Satzbau — SOV statt SVO</h2>
+<p>Japanisch hat <strong>Subjekt — Objekt — Verb</strong>, Deutsch SVO.</p>
+<blockquote>
+Deutsch: <em>Ich (S) esse (V) Sushi (O).</em><br>
+Japanisch: <span class="jp">わたしは すしを たべます。</span> — <em>Watashi wa sushi wo tabemasu.</em> — Ich Sushi esse.
+</blockquote>
+<p>Partikel (は, を, に, …) markieren die Rolle. Wortstellung ist relativ frei, solange das Verb am Ende steht.</p>
+
+<h2>2. です — die Kopula ("ist/sind")</h2>
+<p><strong>Struktur:</strong> [X] は [Y] です。 — "X ist Y."</p>
+<ul>
+<li><span class="jp">私は ドイツ人です。</span> — Ich bin Deutscher.</li>
+<li><span class="jp">これは 水です。</span> — Das ist Wasser.</li>
+</ul>
+<p><strong>Verneinung:</strong> ではありません (gesprochen じゃありません). <strong>Vergangenheit:</strong> でした.</p>
+
+<h2>3. Die wichtigsten Partikel</h2>
+<table>
+<tr><th>Partikel</th><th>Funktion</th><th>Beispiel</th></tr>
+<tr><td class="jp">は</td><td>Thema (gesprochen "wa")</td><td><span class="jp">私は ドイツ人です。</span></td></tr>
+<tr><td class="jp">が</td><td>Subjekt / Erstnennung</td><td><span class="jp">猫が います。</span> — Da ist eine Katze.</td></tr>
+<tr><td class="jp">を</td><td>Objekt (gesprochen "o")</td><td><span class="jp">水を ください。</span> — Wasser bitte.</td></tr>
+<tr><td class="jp">に</td><td>Ziel / Zeitpunkt</td><td><span class="jp">東京に いきます。</span></td></tr>
+<tr><td class="jp">で</td><td>Ort der Handlung / Mittel</td><td><span class="jp">バスで いきます。</span></td></tr>
+<tr><td class="jp">の</td><td>Possessiv / "von"</td><td><span class="jp">わたしの ほん</span> — mein Buch</td></tr>
+<tr><td class="jp">か</td><td>Fragezeichen</td><td><span class="jp">行きますか?</span></td></tr>
+<tr><td class="jp">も</td><td>auch</td><td><span class="jp">私も 行きます。</span></td></tr>
+<tr><td class="jp">と</td><td>und / mit</td><td><span class="jp">寿司と ラーメン</span></td></tr>
+<tr><td class="jp">から / まで</td><td>von / bis</td><td><span class="jp">月曜日から 金曜日まで</span></td></tr>
+</table>
+
+<h2>4. Verben in der ます-Form</h2>
+<p>Höfliche Standardform — immer im Gespräch mit Fremden.</p>
+<table>
+<tr><th>Form</th><th>Endung</th><th>Bedeutung</th></tr>
+<tr><td class="jp">食べます</td><td>tabemasu</td><td>esse / isst</td></tr>
+<tr><td class="jp">食べません</td><td>tabemasen</td><td>esse nicht</td></tr>
+<tr><td class="jp">食べました</td><td>tabemashita</td><td>aß</td></tr>
+<tr><td class="jp">食べませんでした</td><td>tabemasen deshita</td><td>aß nicht</td></tr>
+</table>
+
+<h2>5. Wünsche & Bitten</h2>
+<h3>～ください — "bitte gib mir..."</h3>
+<ul>
+<li><span class="jp">水を ください。</span> — Wasser, bitte.</li>
+<li><span class="jp">待って ください。</span> — Bitte warten Sie.</li>
+</ul>
+<h3>～たい — "ich möchte ..."</h3>
+<ul>
+<li><span class="jp">食べたい です。</span> — Ich möchte essen.</li>
+<li><span class="jp">行きたい です。</span> — Ich möchte gehen.</li>
+</ul>
+
+<h2>6. Existenz: あります / います</h2>
+<ul>
+<li><strong>あります</strong> — für Dinge und Pflanzen</li>
+<li><strong>います</strong> — für Lebewesen</li>
+</ul>
+<p>Struktur: [Ort] に [Ding/Wesen] が あります/います。</p>
+<ul>
+<li><span class="jp">ホテルに WiFiが あります。</span> — Im Hotel gibt es WLAN.</li>
+<li><span class="jp">お手洗いは どこに ありますか?</span> — Wo ist die Toilette?</li>
+</ul>
+
+<h2>7. Frageworte</h2>
+<table>
+<tr><th>Wort</th><th>Bedeutung</th><th>Beispiel</th></tr>
+<tr><td class="jp">何 (なに/なん)</td><td>was</td><td><span class="jp">これは 何ですか?</span></td></tr>
+<tr><td class="jp">誰 (だれ)</td><td>wer</td><td><span class="jp">あの人は 誰ですか?</span></td></tr>
+<tr><td class="jp">どこ</td><td>wo</td><td><span class="jp">トイレは どこですか?</span></td></tr>
+<tr><td class="jp">いつ</td><td>wann</td><td><span class="jp">いつ 行きますか?</span></td></tr>
+<tr><td class="jp">いくら</td><td>wieviel (Geld)</td><td><span class="jp">いくらですか?</span></td></tr>
+<tr><td class="jp">どう</td><td>wie</td><td><span class="jp">どう ですか?</span></td></tr>
+<tr><td class="jp">どうして</td><td>warum</td><td></td></tr>
+</table>
+
+<h2>8. Adjektive</h2>
+<h3>い-Adjektive (enden auf い)</h3>
+<ul>
+<li>たかい (takai — teuer), やすい (yasui — billig), おいしい (oishii — lecker), いい (ii — gut)</li>
+<li>Vor Substantiv: <span class="jp">たかい ホテル</span> (ein teures Hotel)</li>
+<li>Als Prädikat + です: <span class="jp">このラーメンは おいしいです。</span></li>
+<li>Verneinung: い → くない (たかくない です = nicht teuer)</li>
+</ul>
+<h3>な-Adjektive (brauchen な vor Substantiv)</h3>
+<ul>
+<li>きれい (schön), しずか (ruhig), ゆうめい (berühmt)</li>
+<li>Vor Substantiv + な: <span class="jp">きれいな へや</span></li>
+<li>Verneinung: + ではありません</li>
+</ul>
+
+<h2>9. Höflichkeit — die Praxisregel</h2>
+<p>Als Tourist sprichst du <strong>immer in der ます/です-Form</strong>. Sicher, universell, nicht zu förmlich.</p>
+<p><strong>Vermeiden:</strong> Plain-Form (食べる statt 食べます), Keigo, あなた (anata = "du" — wirkt distanziert; nutze Name + さん).</p>
+<p><strong>Magische Wörter:</strong> すみません (vor jeder Bitte), お願いします (am Satzende), ありがとうございます (danach), ちょっと... (höflich Nein).</p>
+
+<h2>10. Notfallphrase, wenn die Grammatik weg ist</h2>
+<blockquote>
+<span class="jp">すみません、[Stichwort]、お願いします。</span><br>
+— "Entschuldigung, [Stichwort], bitte."
+</blockquote>
+<ul>
+<li><span class="jp">すみません、水、お願いします。</span></li>
+<li><span class="jp">すみません、駅、お願いします。</span></li>
+</ul>
+<p>Funktioniert nicht überall perfekt, aber Japaner sind verständnisvoll mit Touristen, die es versuchen.</p>
+` },
+
+{ id:"reisesaetze", num:"五", title:"Reise-Sätze", jp:"旅行", body:`
+<h1>旅行フレーズ — Reise-Sätze</h1>
+<p>~85 fertige Sätze. Auswendig lernen, anpassen, anwenden. Sprich jeden Satz mindestens 3× <strong>laut</strong> aus.</p>
+
+<h2>1. Begrüßung & Kennenlernen</h2>
+<table>
+<tr><th>Japanisch</th><th>Romaji</th><th>Deutsch</th></tr>
+<tr><td class="jp">こんにちは</td><td>konnichiwa</td><td>Hallo / Guten Tag</td></tr>
+<tr><td class="jp">はじめまして</td><td>hajimemashite</td><td>Schön Sie kennenzulernen</td></tr>
+<tr><td class="jp">わたしは [Name] です</td><td>watashi wa [Name] desu</td><td>Ich bin [Name]</td></tr>
+<tr><td class="jp">ドイツから 来ました</td><td>doitsu kara kimashita</td><td>Ich komme aus Deutschland</td></tr>
+<tr><td class="jp">よろしく お願いします</td><td>yoroshiku onegaishimasu</td><td>Freut mich</td></tr>
+<tr><td class="jp">ありがとうございます</td><td>arigatou gozaimasu</td><td>Vielen Dank</td></tr>
+<tr><td class="jp">すみません</td><td>sumimasen</td><td>Entschuldigung</td></tr>
+</table>
+
+<h2>2. Verständigung & Hilfe</h2>
+<table>
+<tr><td class="jp">英語が 話せますか?</td><td>eigo ga hanasemasu ka?</td><td>Sprechen Sie Englisch?</td></tr>
+<tr><td class="jp">日本語が ちょっと わかります</td><td>nihongo ga chotto wakarimasu</td><td>Ich verstehe ein bisschen</td></tr>
+<tr><td class="jp">もう一度 お願いします</td><td>mou ichido onegaishimasu</td><td>Noch einmal, bitte</td></tr>
+<tr><td class="jp">ゆっくり 話してください</td><td>yukkuri hanashite kudasai</td><td>Bitte langsam sprechen</td></tr>
+<tr><td class="jp">わかりません</td><td>wakarimasen</td><td>Ich verstehe nicht</td></tr>
+<tr><td class="jp">書いてもらえますか?</td><td>kaite moraemasu ka?</td><td>Können Sie es aufschreiben?</td></tr>
+<tr><td class="jp">助けてください</td><td>tasukete kudasai</td><td>Bitte helfen Sie mir</td></tr>
+</table>
+
+<h2>3. Restaurant</h2>
+<table>
+<tr><td class="jp">メニューを ください</td><td>menyuu wo kudasai</td><td>Speisekarte, bitte</td></tr>
+<tr><td class="jp">英語の メニューは ありますか?</td><td>eigo no menyuu wa arimasu ka?</td><td>Englische Speisekarte?</td></tr>
+<tr><td class="jp">これを ください</td><td>kore wo kudasai</td><td>Das hier bitte</td></tr>
+<tr><td class="jp">おすすめは 何ですか?</td><td>osusume wa nan desu ka?</td><td>Was empfehlen Sie?</td></tr>
+<tr><td class="jp">ベジタリアンです</td><td>bejitarian desu</td><td>Ich bin Vegetarier</td></tr>
+<tr><td class="jp">肉は 食べません</td><td>niku wa tabemasen</td><td>Ich esse kein Fleisch</td></tr>
+<tr><td class="jp">アレルギーが あります</td><td>arerugii ga arimasu</td><td>Ich habe eine Allergie</td></tr>
+<tr><td class="jp">辛くないですか?</td><td>karakunai desu ka?</td><td>Ist das nicht scharf?</td></tr>
+<tr><td class="jp">お水を ください</td><td>omizu wo kudasai</td><td>Wasser, bitte</td></tr>
+<tr><td class="jp">お会計を お願いします</td><td>okaikei wo onegaishimasu</td><td>Die Rechnung, bitte</td></tr>
+<tr><td class="jp">カードで 払えますか?</td><td>kaado de haraemasu ka?</td><td>Mit Karte zahlen?</td></tr>
+<tr><td class="jp">ごちそうさまでした</td><td>gochisousama deshita</td><td>Danke für das Essen</td></tr>
+</table>
+
+<h2>4. Bahnhof & Zug</h2>
+<table>
+<tr><td class="jp">[Ort] までの 切符を ください</td><td>... made no kippu wo kudasai</td><td>Eine Fahrkarte nach [Ort]</td></tr>
+<tr><td class="jp">いくらですか?</td><td>ikura desu ka?</td><td>Was kostet das?</td></tr>
+<tr><td class="jp">何番線 ですか?</td><td>nanbansen desu ka?</td><td>Welches Gleis?</td></tr>
+<tr><td class="jp">この電車は [Ort]に 行きますか?</td><td>kono densha wa ... ni ikimasu ka?</td><td>Fährt der Zug nach ...?</td></tr>
+<tr><td class="jp">次の駅は どこですか?</td><td>tsugi no eki wa doko desu ka?</td><td>Wie heißt der nächste Bahnhof?</td></tr>
+<tr><td class="jp">何時に 出発しますか?</td><td>nanji ni shuppatsu shimasu ka?</td><td>Wann fährt er ab?</td></tr>
+<tr><td class="jp">乗り換えは どこですか?</td><td>norikae wa doko desu ka?</td><td>Wo umsteigen?</td></tr>
+<tr><td class="jp">最終電車は 何時ですか?</td><td>saishuu densha wa nanji desu ka?</td><td>Wann fährt der letzte Zug?</td></tr>
+</table>
+
+<h2>5. Wegfindung</h2>
+<table>
+<tr><td class="jp">すみません、[Ort]は どこですか?</td><td>sumimasen, ... wa doko desu ka?</td><td>Wo ist [Ort]?</td></tr>
+<tr><td class="jp">駅は どっちですか?</td><td>eki wa docchi desu ka?</td><td>In welche Richtung der Bahnhof?</td></tr>
+<tr><td class="jp">近いですか? 遠いですか?</td><td>chikai? tooi?</td><td>Nah oder weit?</td></tr>
+<tr><td class="jp">歩いて 何分ですか?</td><td>aruite nanpun desu ka?</td><td>Wieviele Minuten zu Fuß?</td></tr>
+<tr><td class="jp">まっすぐ 行ってください</td><td>massugu itte kudasai</td><td>Geradeaus</td></tr>
+<tr><td class="jp">右に 曲がってください</td><td>migi ni magatte kudasai</td><td>Rechts abbiegen</td></tr>
+<tr><td class="jp">左に 曲がってください</td><td>hidari ni magatte kudasai</td><td>Links abbiegen</td></tr>
+<tr><td class="jp">地図を 見せてもらえますか?</td><td>chizu wo misete moraemasu ka?</td><td>Können Sie es zeigen?</td></tr>
+</table>
+
+<h2>6. Hotel</h2>
+<table>
+<tr><td class="jp">チェックインを お願いします</td><td>chekku in wo onegaishimasu</td><td>Ich möchte einchecken</td></tr>
+<tr><td class="jp">[Name]で 予約しています</td><td>... de yoyaku shite imasu</td><td>Ich habe reserviert unter [Name]</td></tr>
+<tr><td class="jp">パスポートを どうぞ</td><td>pasupooto wo douzo</td><td>Hier ist mein Pass</td></tr>
+<tr><td class="jp">朝食は 何時からですか?</td><td>choushoku wa nanji kara desu ka?</td><td>Ab wann Frühstück?</td></tr>
+<tr><td class="jp">WiFiの パスワードは 何ですか?</td><td>waifai no pasuwaado wa?</td><td>WLAN-Passwort?</td></tr>
+<tr><td class="jp">もう一泊 できますか?</td><td>mou ippaku dekimasu ka?</td><td>Eine weitere Nacht?</td></tr>
+<tr><td class="jp">鍵を なくしました</td><td>kagi wo nakushimashita</td><td>Schlüssel verloren</td></tr>
+<tr><td class="jp">エアコンが 動きません</td><td>eakon ga ugokimasen</td><td>Klimaanlage geht nicht</td></tr>
+<tr><td class="jp">チェックアウトは 何時までですか?</td><td>chekku auto wa nanji made desu ka?</td><td>Bis wann Check-out?</td></tr>
+</table>
+
+<h2>7. Einkaufen & Geld</h2>
+<table>
+<tr><td class="jp">いくらですか?</td><td>ikura desu ka?</td><td>Was kostet das?</td></tr>
+<tr><td class="jp">高いですね</td><td>takai desu ne</td><td>Das ist teuer</td></tr>
+<tr><td class="jp">もう少し 安いのは ありますか?</td><td>mou sukoshi yasui no wa?</td><td>Etwas Günstigeres?</td></tr>
+<tr><td class="jp">別の 色は ありますか?</td><td>betsu no iro wa?</td><td>Andere Farbe?</td></tr>
+<tr><td class="jp">サイズは Mを ください</td><td>saizu wa emu wo kudasai</td><td>Größe M, bitte</td></tr>
+<tr><td class="jp">試着できますか?</td><td>shichaku dekimasu ka?</td><td>Anprobieren?</td></tr>
+<tr><td class="jp">カードで お願いします</td><td>kaado de onegaishimasu</td><td>Mit Karte, bitte</td></tr>
+<tr><td class="jp">レシートを ください</td><td>reshiito wo kudasai</td><td>Quittung, bitte</td></tr>
+<tr><td class="jp">袋は 要りません</td><td>fukuro wa irimasen</td><td>Keine Tüte</td></tr>
+<tr><td class="jp">温めてください</td><td>atatamete kudasai</td><td>Bitte aufwärmen</td></tr>
+</table>
+
+<h2>8. Notfall</h2>
+<table>
+<tr><td class="jp">助けて!</td><td>tasukete!</td><td>Hilfe!</td></tr>
+<tr><td class="jp">警察を 呼んでください</td><td>keisatsu wo yonde kudasai</td><td>Polizei rufen</td></tr>
+<tr><td class="jp">救急車を 呼んでください</td><td>kyuukyuusha wo yonde kudasai</td><td>Krankenwagen rufen</td></tr>
+<tr><td class="jp">病院は どこですか?</td><td>byouin wa doko desu ka?</td><td>Wo ist das Krankenhaus?</td></tr>
+<tr><td class="jp">気分が 悪いです</td><td>kibun ga warui desu</td><td>Mir ist schlecht</td></tr>
+<tr><td class="jp">お腹が 痛いです</td><td>onaka ga itai desu</td><td>Bauchschmerzen</td></tr>
+<tr><td class="jp">熱が あります</td><td>netsu ga arimasu</td><td>Ich habe Fieber</td></tr>
+<tr><td class="jp">アレルギーが あります</td><td>arerugii ga arimasu</td><td>Ich habe eine Allergie</td></tr>
+<tr><td class="jp">パスポートを なくしました</td><td>pasupooto wo nakushimashita</td><td>Pass verloren</td></tr>
+<tr><td class="jp">大使館に 連絡したいです</td><td>taishikan ni renraku shitai desu</td><td>Botschaft kontaktieren</td></tr>
+</table>
+
+<h2>9. Smalltalk</h2>
+<table>
+<tr><td class="jp">日本は 初めてです</td><td>nihon wa hajimete desu</td><td>Erstes Mal in Japan</td></tr>
+<tr><td class="jp">日本が 大好きです</td><td>nihon ga daisuki desu</td><td>Ich liebe Japan</td></tr>
+<tr><td class="jp">とても 美味しいです</td><td>totemo oishii desu</td><td>Sehr lecker</td></tr>
+<tr><td class="jp">写真を 撮ってもいいですか?</td><td>shashin wo totte mo ii desu ka?</td><td>Foto machen?</td></tr>
+<tr><td class="jp">日本語を 勉強しています</td><td>nihongo wo benkyou shite imasu</td><td>Ich lerne Japanisch</td></tr>
+<tr><td class="jp">また 来ます</td><td>mata kimasu</td><td>Ich komme wieder</td></tr>
+<tr><td class="jp">楽しかったです</td><td>tanoshikatta desu</td><td>Es war schön</td></tr>
+</table>
+
+<h2>10. Höflich ablehnen</h2>
+<p>In Japan vermeidet man direktes "Nein":</p>
+<table>
+<tr><td class="jp">ちょっと…</td><td>chotto...</td><td>Naja... (= höflich Nein)</td></tr>
+<tr><td class="jp">すみません、難しいです</td><td>sumimasen, muzukashii desu</td><td>Entschuldigung, schwierig</td></tr>
+<tr><td class="jp">大丈夫です</td><td>daijoubu desu</td><td>Schon gut / Danke nein</td></tr>
+<tr><td class="jp">結構です</td><td>kekkou desu</td><td>Nein danke (höflich)</td></tr>
+</table>
+
+<h2>Spickzettel — die 10 wichtigsten Sätze</h2>
+<ol>
+<li><span class="jp">すみません</span> — Entschuldigung</li>
+<li><span class="jp">お願いします</span> — bitte</li>
+<li><span class="jp">ありがとうございます</span> — vielen Dank</li>
+<li><span class="jp">わかりません</span> — ich verstehe nicht</li>
+<li><span class="jp">英語は 話せますか?</span> — Sprechen Sie Englisch?</li>
+<li><span class="jp">これは 何ですか?</span> — Was ist das?</li>
+<li><span class="jp">いくらですか?</span> — Was kostet das?</li>
+<li><span class="jp">どこですか?</span> — Wo ist es?</li>
+<li><span class="jp">トイレは どこですか?</span> — Wo ist die Toilette?</li>
+<li><span class="jp">助けてください</span> — Bitte helfen Sie mir</li>
+</ol>
+` },
+
+{ id:"vokabel-ref", num:"六", title:"Vokabel-Referenz (alle 12 Themen)", jp:"単語表", body:`
+<h1>単語 — Vokabel-Referenz</h1>
+<p>~600 Wörter, geordnet nach 12 Themen. Diese Seite ist die Lese-Referenz; zum aktiven Drillen nutze den Tab "Vokabeln".</p>
+
+<h2>1. Begrüßung & Höflichkeit</h2>
+<table>
+<tr><th>JP</th><th>Romaji</th><th>Deutsch</th></tr>
+<tr><td class="jp">おはようございます</td><td>ohayou gozaimasu</td><td>Guten Morgen</td></tr>
+<tr><td class="jp">こんにちは</td><td>konnichiwa</td><td>Guten Tag / Hallo</td></tr>
+<tr><td class="jp">こんばんは</td><td>konbanwa</td><td>Guten Abend</td></tr>
+<tr><td class="jp">おやすみなさい</td><td>oyasumi nasai</td><td>Gute Nacht</td></tr>
+<tr><td class="jp">さようなら</td><td>sayounara</td><td>Auf Wiedersehen</td></tr>
+<tr><td class="jp">またね / またあした</td><td>mata ne / ashita</td><td>Bis dann / morgen</td></tr>
+<tr><td class="jp">はじめまして</td><td>hajimemashite</td><td>Schön kennenzulernen</td></tr>
+<tr><td class="jp">よろしくおねがいします</td><td>yoroshiku onegaishimasu</td><td>Standardfloskel</td></tr>
+<tr><td class="jp">ありがとうございます</td><td>arigatou gozaimasu</td><td>Vielen Dank</td></tr>
+<tr><td class="jp">すみません / ごめんなさい</td><td>sumimasen / gomen nasai</td><td>Entschuldigung / Es tut mir leid</td></tr>
+<tr><td class="jp">おねがいします / どうぞ</td><td>onegaishimasu / douzo</td><td>Bitte / Bitte (anbieten)</td></tr>
+<tr><td class="jp">いらっしゃいませ</td><td>irasshaimase</td><td>Willkommen (im Laden)</td></tr>
+<tr><td class="jp">はい / いいえ</td><td>hai / iie</td><td>Ja / Nein</td></tr>
+<tr><td class="jp">わかりました / わかりません</td><td>wakarimashita / -sen</td><td>Verstanden / nicht verstanden</td></tr>
+<tr><td class="jp">ちょっと</td><td>chotto</td><td>Ein bisschen / Moment</td></tr>
+</table>
+
+<h2>2. Zahlen, Zeit & Datum</h2>
+<p><strong>Zahlen 1–10:</strong> いち, に, さん, よん/し, ご, ろく, なな/しち, はち, きゅう/く, じゅう</p>
+<p><strong>Größere:</strong> にじゅう (20), ひゃく (100), さんびゃく (300!), ろっぴゃく (600!), せん (1000), いちまん (10.000)</p>
+<table>
+<tr><th>JP</th><th>Romaji</th><th>DE</th></tr>
+<tr><td class="jp">月曜日</td><td>getsuyoubi</td><td>Montag</td></tr>
+<tr><td class="jp">火曜日</td><td>kayoubi</td><td>Dienstag</td></tr>
+<tr><td class="jp">水曜日</td><td>suiyoubi</td><td>Mittwoch</td></tr>
+<tr><td class="jp">木曜日</td><td>mokuyoubi</td><td>Donnerstag</td></tr>
+<tr><td class="jp">金曜日</td><td>kinyoubi</td><td>Freitag</td></tr>
+<tr><td class="jp">土曜日</td><td>doyoubi</td><td>Samstag</td></tr>
+<tr><td class="jp">日曜日</td><td>nichiyoubi</td><td>Sonntag</td></tr>
+<tr><td class="jp">今 / 今日 / 明日 / 昨日</td><td>ima / kyou / ashita / kinou</td><td>jetzt / heute / morgen / gestern</td></tr>
+<tr><td class="jp">朝 / 昼 / 夜</td><td>asa / hiru / yoru</td><td>Morgen / Mittag / Abend</td></tr>
+<tr><td class="jp">午前 / 午後</td><td>gozen / gogo</td><td>vormittags / nachmittags</td></tr>
+<tr><td class="jp">何時</td><td>nanji</td><td>wieviel Uhr</td></tr>
+</table>
+
+<h2>3. Familie & Personen</h2>
+<table>
+<tr><td class="jp">私 / あなた</td><td>watashi / anata</td><td>ich / du</td></tr>
+<tr><td class="jp">家族</td><td>kazoku</td><td>Familie</td></tr>
+<tr><td class="jp">お父さん / 父</td><td>otousan / chichi</td><td>Vater (Anrede / eigener)</td></tr>
+<tr><td class="jp">お母さん / 母</td><td>okaasan / haha</td><td>Mutter</td></tr>
+<tr><td class="jp">兄 / 姉</td><td>ani / ane</td><td>älterer Bruder / Schwester</td></tr>
+<tr><td class="jp">弟 / 妹</td><td>otouto / imouto</td><td>jüngerer Bruder / Schwester</td></tr>
+<tr><td class="jp">子供</td><td>kodomo</td><td>Kind</td></tr>
+<tr><td class="jp">友達</td><td>tomodachi</td><td>Freund/in</td></tr>
+<tr><td class="jp">先生 / 学生</td><td>sensei / gakusei</td><td>Lehrer / Student</td></tr>
+<tr><td class="jp">男の人 / 女の人</td><td>otoko/onna no hito</td><td>Mann / Frau</td></tr>
+<tr><td class="jp">大人</td><td>otona</td><td>Erwachsener</td></tr>
+<tr><td class="jp">お名前</td><td>onamae</td><td>Name (höflich)</td></tr>
+</table>
+
+<h2>4. Essen & Restaurant</h2>
+<p><strong>Grundbegriffe:</strong> ご飯 (gohan), 食べ物 (tabemono), 飲み物 (nomimono), メニュー (menyuu), お水 (omizu), お茶 (ocha), コーヒー (koohii), ビール (biiru), 日本酒 (nihonshu).</p>
+<p><strong>Speisen:</strong> ラーメン, うどん, そば, 寿司, 刺身 (sashimi), 天ぷら (tenpura), 焼き鳥 (yakitori), カレー, 餃子 (gyouza), 味噌汁 (misoshiru), パン, ケーキ, アイス.</p>
+<p><strong>Zutaten:</strong> 肉 niku, 魚 sakana, 鶏肉 toriniku, 牛肉 gyuuniku, 豚肉 butaniku, 卵 tamago, 果物 kudamono, 野菜 yasai.</p>
+<p><strong>Restaurant:</strong> レストラン, 居酒屋 izakaya, カフェ, 注文 chuumon, お会計 okaikei, いただきます (vor), ごちそうさまでした (nach), おいしい, 辛い karai, 甘い amai, 箸 hashi.</p>
+
+<h2>5. Verkehr & Wegfindung</h2>
+<p><strong>Transport:</strong> 駅 eki, 電車 densha, 新幹線 shinkansen, 地下鉄 chikatetsu, バス, タクシー, 自転車 jitensha, 飛行機 hikouki, 空港 kuukou.</p>
+<p><strong>Bahnhof:</strong> 切符 kippu, 改札 kaisatsu, ホーム hoomu, 入口 iriguchi, 出口 deguchi, 北口/南口/東口/西口.</p>
+<p><strong>Wegfindung:</strong> 道 michi, 信号 shingou, 交差点 kousaten, 右 migi, 左 hidari, まっすぐ massugu, 近い chikai, 遠い tooi, 次 tsugi, 前/後ろ mae/ushiro, 上/下 ue/shita, 中/外 naka/soto.</p>
+<p><strong>Demonstrativ:</strong> ここ koko (hier), そこ soko (dort bei dir), あそこ asoko (dort entfernt), どこ doko (wo).</p>
+<p><strong>Sonstiges:</strong> 地図 chizu, 住所 juusho, 駐車場 chuushajou.</p>
+
+<h2>6. Einkaufen & Geld</h2>
+<p><strong>Läden:</strong> お店 omise, スーパー suupaa, コンビニ konbini, デパート depaato, 本屋 honya, 薬局 yakkyoku.</p>
+<p><strong>Geld:</strong> お金 okane, 円 en, 現金 genkin, カード kaado, レシート reshiito, 値段 nedan.</p>
+<p><strong>Adjektive:</strong> 高い takai (teuer), 安い yasui (billig), 大きい ookii, 小さい chiisai, 新しい atarashii, 古い furui.</p>
+<p><strong>Farben:</strong> 赤 aka, 青 ao, 黒 kuro, 白 shiro, 緑 midori, 黄色 kiiro.</p>
+<p><strong>Sonstiges:</strong> サイズ saizu, これ kore, それ sore, あれ are, いくら ikura, 全部で zenbu de, お土産 omiyage, 売り切れ urikire, 無料 muryou.</p>
+
+<h2>7. Hotel & Unterkunft</h2>
+<p>ホテル hoteru, 旅館 ryokan, 民宿 minshuku, カプセルホテル, 部屋 heya, シングル/ダブル/ツイン, 予約 yoyaku, チェックイン/アウト, 鍵 kagi, パスポート, 朝食 choushoku, お風呂 ofuro, 温泉 onsen, 大浴場, 浴衣 yukata, タオル, トイレ, お手洗い otearai (höflich), ベッド, 布団 futon, エアコン, WiFi, 階 kai, エレベーター.</p>
+
+<h2>8. Notfall & Gesundheit</h2>
+<p>病院 byouin, 医者 isha, 看護師 kangoshi, 薬 kusuri, 風邪 kaze (Erkältung), 熱 netsu, 頭痛 zutsuu, お腹 onaka, 痛い itai, 気分が悪い kibun ga warui, 吐き気 hakike, アレルギー arerugii, 救急車 kyuukyuusha, 警察 keisatsu, 助けて tasukete!, 危ない abunai, 危険 kiken, 注意 chuui, 火事 kaji, 地震 jishin, 台風 taifuu, 怪我 kega, 大丈夫 daijoubu, 大使館 taishikan, 電話 denwa, 電話番号.</p>
+
+<h2>9. Wetter & Natur</h2>
+<p>天気 tenki, 晴れ hare, 曇り kumori, 雨 ame, 雪 yuki, 風 kaze, 暑い atsui, 寒い samui, 暖かい atatakai, 涼しい suzushii, 春 haru, 夏 natsu, 秋 aki, 冬 fuyu, 桜 sakura, 紅葉 kouyou, 山 yama, 海 umi, 川 kawa, 公園 kouen, 木 ki, 花 hana, 空 sora.</p>
+
+<h2>10. Smalltalk & Beziehungen</h2>
+<p>国 kuni, ドイツ doitsu, ドイツ人 doitsujin, 日本 nihon, 日本人 nihonjin, 言葉 kotoba, 日本語 nihongo, 英語 eigo, ドイツ語, 仕事 shigoto, 会社 kaisha, 学校 gakkou, 大学 daigaku, 趣味 shumi, 音楽 ongaku, 映画 eiga, 本 hon, スポーツ, 旅行 ryokou, 写真 shashin, 好き suki, 嫌い kirai, 楽しい tanoshii, 面白い omoshiroi, すごい sugoi, かわいい kawaii, きれい kirei, 素敵 suteki, もちろん, たぶん tabun, やっぱり yappari, ほんとう hontou.</p>
+
+<h2>11. Wohnen & Stadt</h2>
+<p>家 ie, マンション manshon, アパート apaato, 街 machi, 都市 toshi, 田舎 inaka, 郵便局 yuubinkyoku, 銀行 ginkou, ATM, 美術館 bijutsukan, 博物館 hakubutsukan, お寺 otera, 神社 jinja, お城 oshiro, 観光 kankou, 観光地 kankouchi, インフォメーション.</p>
+
+<h2>12. Wichtige Verben (ます-Form)</h2>
+<p><strong>Bewegung:</strong> 行きます ikimasu, 来ます kimasu, 帰ります kaerimasu, 入ります hairimasu, 出ます demasu, 乗ります norimasu, 降ります orimasu, 待ちます machimasu.</p>
+<p><strong>Essen:</strong> 食べます tabemasu, 飲みます nomimasu, 注文します chuumon shimasu, 払います haraimasu.</p>
+<p><strong>Sprechen:</strong> 話します hanashimasu, 聞きます kikimasu, 言います iimasu, 読みます yomimasu, 書きます kakimasu, わかります wakarimasu.</p>
+<p><strong>Handeln:</strong> します shimasu, 見ます mimasu, 買います kaimasu, 使います tsukaimasu, 持ちます mochimasu, あります arimasu, います imasu, 思います omoimasu, 探します sagashimasu, 教えます oshiemasu, 助けます tasukemasu, 予約します yoyaku shimasu, 電話します denwa shimasu.</p>
+<p><strong>Sein/Werden:</strong> です desu, ではありません dewa arimasen, でした deshita, なります narimasu, 起きます okimasu, 寝ます nemasu, 歩きます arukimasu, 走ります hashirimasu, 撮ります torimasu (Foto).</p>
+
+<blockquote>Lerne Verben in der ます-Form. Andere Formen (て-, ない-, た-Form) kommen später durch Beispielsätze.</blockquote>
+` },
+
+{ id:"kanji-ref", num:"七", title:"Kanji-Referenz (alle 80)", jp:"漢字表", body:`
+<h1>漢字 — Reise-Kanji</h1>
+<p>~80 Kanji, die du auf einer Reise wirklich brauchst. Geordnet nach Nutzen. Zum aktiven Drillen nutze den Tab "Kanji".</p>
+
+<h2>Block A — Zahlen</h2>
+<table>
+<tr><th>Kanji</th><th>Bedeutung</th><th>Lesung</th><th>Beispiel</th></tr>
+<tr><td class="jp">一</td><td>eins</td><td>ichi</td><td>一人 (hitori — 1 Person)</td></tr>
+<tr><td class="jp">二</td><td>zwei</td><td>ni</td><td>二月 (Februar)</td></tr>
+<tr><td class="jp">三</td><td>drei</td><td>san</td><td>三日 (mikka)</td></tr>
+<tr><td class="jp">四</td><td>vier</td><td>shi/yon</td><td>四時 (yoji — 4 Uhr)</td></tr>
+<tr><td class="jp">五</td><td>fünf</td><td>go</td><td>五人 (gonin)</td></tr>
+<tr><td class="jp">六</td><td>sechs</td><td>roku</td><td>六月 (Juni)</td></tr>
+<tr><td class="jp">七</td><td>sieben</td><td>shichi/nana</td><td>七時 (shichiji)</td></tr>
+<tr><td class="jp">八</td><td>acht</td><td>hachi</td><td>八月 (August)</td></tr>
+<tr><td class="jp">九</td><td>neun</td><td>kyuu/ku</td><td>九時 (kuji)</td></tr>
+<tr><td class="jp">十</td><td>zehn</td><td>juu</td><td>十円 (10 Yen)</td></tr>
+<tr><td class="jp">百</td><td>hundert</td><td>hyaku</td><td>三百円 (300 Yen)</td></tr>
+<tr><td class="jp">千</td><td>tausend</td><td>sen</td><td>千円 (1000 Yen)</td></tr>
+<tr><td class="jp">万</td><td>zehntausend</td><td>man</td><td>一万円 (10000 Yen)</td></tr>
+<tr><td class="jp">円</td><td>Yen</td><td>en</td><td>五百円</td></tr>
+</table>
+
+<h2>Block B — Zeit & Tage</h2>
+<table>
+<tr><td class="jp">日</td><td>Tag / Sonne</td><td>nichi/hi</td><td>日本 / 今日</td></tr>
+<tr><td class="jp">月</td><td>Monat / Mond</td><td>gatsu/tsuki</td><td>一月</td></tr>
+<tr><td class="jp">火</td><td>Feuer</td><td>ka</td><td>火曜日 (Di)</td></tr>
+<tr><td class="jp">水</td><td>Wasser</td><td>sui/mizu</td><td>水曜日 / お水</td></tr>
+<tr><td class="jp">木</td><td>Baum</td><td>moku/ki</td><td>木曜日 (Do)</td></tr>
+<tr><td class="jp">金</td><td>Gold / Geld</td><td>kin</td><td>金曜日 / お金</td></tr>
+<tr><td class="jp">土</td><td>Erde</td><td>do</td><td>土曜日 (Sa)</td></tr>
+<tr><td class="jp">年</td><td>Jahr</td><td>nen</td><td>来年 (rainen)</td></tr>
+<tr><td class="jp">時</td><td>Stunde</td><td>ji</td><td>三時</td></tr>
+<tr><td class="jp">分</td><td>Minute</td><td>fun/pun</td><td>五分 (gofun)</td></tr>
+<tr><td class="jp">半</td><td>Hälfte</td><td>han</td><td>三時半 (3:30)</td></tr>
+<tr><td class="jp">今</td><td>jetzt</td><td>ima</td><td>今日 (kyou)</td></tr>
+</table>
+
+<h2>Block C — Wegfindung & Verkehr</h2>
+<table>
+<tr><td class="jp">駅</td><td>Bahnhof</td><td>eki</td><td>東京駅</td></tr>
+<tr><td class="jp">電</td><td>Strom</td><td>den</td><td>電車 (Zug)</td></tr>
+<tr><td class="jp">車</td><td>Auto</td><td>sha/kuruma</td><td>電車 (densha)</td></tr>
+<tr><td class="jp">入</td><td>hinein</td><td>hai/nyuu</td><td>入口 (iriguchi)</td></tr>
+<tr><td class="jp">出</td><td>hinaus</td><td>de/shutsu</td><td>出口 (deguchi)</td></tr>
+<tr><td class="jp">口</td><td>Öffnung</td><td>guchi/kou</td><td>入口/出口</td></tr>
+<tr><td class="jp">北</td><td>Norden</td><td>kita</td><td>北口</td></tr>
+<tr><td class="jp">南</td><td>Süden</td><td>minami</td><td>南口</td></tr>
+<tr><td class="jp">東</td><td>Osten</td><td>higashi/tou</td><td>東京</td></tr>
+<tr><td class="jp">西</td><td>Westen</td><td>nishi/sei</td><td>西口</td></tr>
+<tr><td class="jp">中</td><td>Mitte</td><td>naka/chuu</td><td>中央</td></tr>
+<tr><td class="jp">大</td><td>groß</td><td>dai/oo</td><td>大きい</td></tr>
+<tr><td class="jp">小</td><td>klein</td><td>shou/chii</td><td>小さい</td></tr>
+<tr><td class="jp">上</td><td>oben</td><td>jou/ue</td><td>上り</td></tr>
+<tr><td class="jp">下</td><td>unten</td><td>ka/shita</td><td>下り</td></tr>
+<tr><td class="jp">行</td><td>gehen</td><td>i/kou</td><td>行きます</td></tr>
+</table>
+
+<h2>Block D — Speisekarte</h2>
+<table>
+<tr><td class="jp">食</td><td>essen</td><td>shoku/ta</td><td>食べる</td></tr>
+<tr><td class="jp">飲</td><td>trinken</td><td>no/in</td><td>飲み物</td></tr>
+<tr><td class="jp">物</td><td>Ding</td><td>mono/butsu</td><td>食べ物</td></tr>
+<tr><td class="jp">肉</td><td>Fleisch</td><td>niku</td><td>牛肉</td></tr>
+<tr><td class="jp">魚</td><td>Fisch</td><td>sakana/gyo</td><td>魚屋</td></tr>
+<tr><td class="jp">米</td><td>Reis (ungekocht)</td><td>bei/kome</td><td>お米</td></tr>
+<tr><td class="jp">茶</td><td>Tee</td><td>cha</td><td>お茶</td></tr>
+<tr><td class="jp">牛</td><td>Rind</td><td>gyuu</td><td>牛丼</td></tr>
+<tr><td class="jp">豚</td><td>Schwein</td><td>buta/ton</td><td>豚肉</td></tr>
+<tr><td class="jp">鶏</td><td>Huhn</td><td>tori/kei</td><td>鶏肉</td></tr>
+<tr><td class="jp">卵</td><td>Ei</td><td>tamago</td><td>生卵</td></tr>
+</table>
+
+<h2>Block E — Einkaufen / Konbini</h2>
+<table>
+<tr><td class="jp">店</td><td>Laden</td><td>ten/mise</td><td>お店</td></tr>
+<tr><td class="jp">屋</td><td>Laden (Suffix)</td><td>ya</td><td>本屋</td></tr>
+<tr><td class="jp">本</td><td>Buch</td><td>hon</td><td>日本</td></tr>
+<tr><td class="jp">高</td><td>hoch / teuer</td><td>taka/kou</td><td>高い</td></tr>
+<tr><td class="jp">安</td><td>billig</td><td>yasu/an</td><td>安い</td></tr>
+<tr><td class="jp">新</td><td>neu</td><td>shin/atara</td><td>新しい</td></tr>
+<tr><td class="jp">古</td><td>alt</td><td>furu/ko</td><td>古い</td></tr>
+<tr><td class="jp">男</td><td>Mann</td><td>otoko/dan</td><td>男性 (Toilette)</td></tr>
+<tr><td class="jp">女</td><td>Frau</td><td>onna/jo</td><td>女性 (Toilette)</td></tr>
+</table>
+
+<h2>Block F — Hotel</h2>
+<table>
+<tr><td class="jp">宿</td><td>Unterkunft</td><td>yado/shuku</td><td>民宿</td></tr>
+<tr><td class="jp">部</td><td>Teil</td><td>bu</td><td>部屋 (heya)</td></tr>
+<tr><td class="jp">室</td><td>Raum</td><td>shitsu</td><td>浴室</td></tr>
+<tr><td class="jp">浴</td><td>Bad</td><td>yoku</td><td>浴室</td></tr>
+<tr><td class="jp">名</td><td>Name</td><td>na/mei</td><td>名前 (namae)</td></tr>
+<tr><td class="jp">前</td><td>vor</td><td>zen/mae</td><td>名前</td></tr>
+</table>
+
+<h2>Block G — Notfall</h2>
+<table>
+<tr><td class="jp">病</td><td>Krankheit</td><td>byou</td><td>病院</td></tr>
+<tr><td class="jp">院</td><td>Institution</td><td>in</td><td>病院</td></tr>
+<tr><td class="jp">医</td><td>Arzt</td><td>i</td><td>医者</td></tr>
+<tr><td class="jp">薬</td><td>Medikament</td><td>kusuri/yaku</td><td>薬局</td></tr>
+<tr><td class="jp">痛</td><td>Schmerz</td><td>ita/tsuu</td><td>痛い</td></tr>
+<tr><td class="jp">頭</td><td>Kopf</td><td>atama/zu</td><td>頭痛</td></tr>
+<tr><td class="jp">手</td><td>Hand</td><td>te/shu</td><td>お手洗い</td></tr>
+<tr><td class="jp">足</td><td>Fuß</td><td>ashi/soku</td><td>足が痛い</td></tr>
+<tr><td class="jp">危</td><td>Gefahr</td><td>ki/abu</td><td>危ない</td></tr>
+<tr><td class="jp">注</td><td>Achtung</td><td>chuu</td><td>注意</td></tr>
+<tr><td class="jp">意</td><td>Absicht</td><td>i</td><td>注意 (chuui)</td></tr>
+<tr><td class="jp">警</td><td>Polizei</td><td>kei</td><td>警察</td></tr>
+</table>
+
+<h2>Block H — Allgemein wichtig</h2>
+<table>
+<tr><td class="jp">人</td><td>Person</td><td>jin/hito</td><td>日本人</td></tr>
+<tr><td class="jp">国</td><td>Land</td><td>koku/kuni</td><td>外国 (Ausland)</td></tr>
+<tr><td class="jp">何</td><td>was</td><td>nani/nan</td><td>何ですか</td></tr>
+<tr><td class="jp">言</td><td>sagen</td><td>gen/i</td><td>言葉 (kotoba)</td></tr>
+<tr><td class="jp">語</td><td>Sprache</td><td>go</td><td>日本語</td></tr>
+<tr><td class="jp">英</td><td>Englisch</td><td>ei</td><td>英語</td></tr>
+</table>
+
+<h2>Wichtige Schilder, die du erkennen solltest</h2>
+<table>
+<tr><th>Kanji</th><th>Lesung</th><th>Bedeutung</th></tr>
+<tr><td class="jp">入口 / 出口</td><td>iriguchi / deguchi</td><td>Eingang / Ausgang</td></tr>
+<tr><td class="jp">男 / 女</td><td>otoko / onna</td><td>Herren / Damen (Toilette)</td></tr>
+<tr><td class="jp">お手洗い</td><td>otearai</td><td>Toilette (höflich)</td></tr>
+<tr><td class="jp">危険</td><td>kiken</td><td>Gefahr</td></tr>
+<tr><td class="jp">注意</td><td>chuui</td><td>Vorsicht</td></tr>
+<tr><td class="jp">改札 / 切符</td><td>kaisatsu / kippu</td><td>Schranke / Fahrkarte</td></tr>
+<tr><td class="jp">営業中</td><td>eigyouchuu</td><td>Geöffnet</td></tr>
+<tr><td class="jp">準備中</td><td>junbichuu</td><td>Geschlossen (in Vorbereitung)</td></tr>
+<tr><td class="jp">売り切れ</td><td>urikire</td><td>Ausverkauft</td></tr>
+<tr><td class="jp">無料</td><td>muryou</td><td>Kostenlos</td></tr>
+<tr><td class="jp">大人 / 子供</td><td>otona / kodomo</td><td>Erwachsener / Kind</td></tr>
+</table>
+
+<blockquote>Lies, schreib nicht zwingend. Auf der Reise musst du erkennen, nicht produzieren. Lerne Kanji im Wort-Kontext (食 → 食べ物), nicht isoliert.</blockquote>
+` },
+
+{ id:"tracker-info", num:"八", title:"Tracker-Hilfe", jp:"進捗", body:`
+<h1>進捗 — Wochen-Tracker</h1>
+<p>Der Tracker ist im Tab <strong>進捗</strong> direkt im Tool. Diese Seite erklärt, wie er funktioniert und was die Meilensteine sind.</p>
+
+<h2>Wie er funktioniert</h2>
+<ul>
+<li><strong>26 Wochen</strong>, jede mit 7 Tageskästen (Mo–So).</li>
+<li><strong>Tippe einen Tag</strong>, um ihn als gelernt zu markieren — roter Hanko-Stempel mit 正.</li>
+<li>Die Wochen sind <strong>kalendarisch verankert</strong> — sie beginnen am Tag, an dem du das Tool das erste Mal geöffnet hast.</li>
+<li>Das Tool markiert <strong>automatisch den heutigen Tag</strong>, sobald du im Drill-Tab eine richtige Antwort gibst oder eine Vokabel-Karte beantwortest.</li>
+</ul>
+
+<h2>Meilensteine</h2>
+<table>
+<tr><th>Woche</th><th>Meilenstein</th></tr>
+<tr><td>W3</td><td>Hiragana komplett</td></tr>
+<tr><td>W5</td><td>Beide Kana flüssig</td></tr>
+<tr><td>W8</td><td>Sich vorstellen, bis 100 zählen, ohne Romaji</td></tr>
+<tr><td>W11</td><td>Erstes Bestell-Rollenspiel mit dir selbst</td></tr>
+<tr><td>W17</td><td>Speisekarte halb verstehen, Bahnticket kaufen</td></tr>
+<tr><td>W20</td><td>Vollständige Hotel-Konversation simulieren</td></tr>
+<tr><td>W26</td><td>5-Min-Reisekonversation ohne Notizen</td></tr>
+</table>
+
+<h2>Wochenreflexion (jeden Sonntag)</h2>
+<ol>
+<li>Was lief gut?</li>
+<li>Wo hakt es?</li>
+<li>Was ist nächste Woche dran?</li>
+</ol>
+
+<h2>Lernregeln</h2>
+<ul>
+<li><strong>5 von 7 Tagen</strong> pro Woche reichen. Nicht 7 anstreben — sonst gibt's bei einem verpassten Tag einen Knacks.</li>
+<li>Bei <strong>2 Wochen unter 5 Tagen</strong>: Tempo halbieren statt aufgeben.</li>
+<li>Verfehlte Tage <strong>nicht aufholen</strong> — heute starten reicht.</li>
+</ul>
+
+<blockquote>Du bist im Marathon, nicht im Sprint.</blockquote>
+` }
+];
+
+/* ============================================================
+   Tagesplan (für Heute-Tab) — die ersten 14 Tage
+   ============================================================ */
+const DAY_PLAN = [
+    {d:1, task:"あ・い・う・え・お lernen", detail:"Erste Hiragana-Reihe — die fünf Vokale.", tab:"kana"},
+    {d:2, task:"か・き・く・け・こ", detail:"Mit der gestrigen Reihe mischen.", tab:"kana"},
+    {d:3, task:"さ・し・す・せ・そ", detail:"Achtung: し vs. す nicht verwechseln.", tab:"kana"},
+    {d:4, task:"た・ち・つ・て・と", detail:"つ vs し: つ horizontal, し vertikal.", tab:"kana"},
+    {d:5, task:"Review aller 20 Zeichen", detail:"Heute keine neue Reihe — festigen.", tab:"kana"},
+    {d:6, task:"な・に・ぬ・ね・の", detail:"ぬ ね の sehen sich ähnlich — Eselsbrücken!", tab:"kana"},
+    {d:7, task:"Wochenreview + Tracker", detail:"Mixed-Drill + Tracker abhaken.", tab:"tracker"},
+    {d:8, task:"は・ひ・ふ・へ・ほ", detail:"は wird als Partikel 'wa' gesprochen.", tab:"kana"},
+    {d:9, task:"ま・み・む・め・も", detail:"め vs ぬ — Schwanzform.", tab:"kana"},
+    {d:10,task:"や・ゆ・よ", detail:"Nur 3 Zeichen — schneller Tag.", tab:"kana"},
+    {d:11,task:"ら・り・る・れ・ろ", detail:"る vs ろ: る hat Schleife.", tab:"kana"},
+    {d:12,task:"わ・を・ん", detail:"Letzte 3 Hiragana — du hast es geschafft!", tab:"kana"},
+    {d:13,task:"Hiragana komplett", detail:"Mixed-Drill aller 46 Zeichen.", tab:"kana"},
+    {d:14,task:"Wochenreview Phase 1.2", detail:"Hiragana sitzt — kommende Woche Dakuten.", tab:"tracker"}
+];
+
+/* ============================================================
+   State Management (localStorage)
+   ============================================================ */
+const STORAGE_KEY = "japanLernplan_v1";
+let state = loadState();
+
+function loadState() {
+    try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return defaultState();
+        const parsed = JSON.parse(raw);
+        return Object.assign(defaultState(), parsed);
+    } catch (e) { return defaultState(); }
+}
+
+function defaultState() {
+    return {
+        startDate: null,                    // ISO date string when user first started
+        days: {},                           // { "2026-05-01": true }
+        kanaSettings: { system: "hiragana", scope: "basic", mode: "kana2romaji" },
+        kanaStats: { correct: 0, wrong: 0, streak: 0 },
+        vocabBoxes: {},                     // { "おはよう...": 1|2|3 }
+        vocabFilter: ["greeting"],          // active themes
+        vocabIdx: 0,
+        kanjiBlock: "numbers",
+        kanjiIdx: 0
+    };
+}
+
+function saveState() { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
+
+function todayISO() {
+    const d = new Date();
+    return d.toISOString().slice(0, 10);
+}
+
+function ensureStartDate() {
+    if (!state.startDate) {
+        state.startDate = todayISO();
+        saveState();
+    }
+}
+
+function dayNumber() {
+    if (!state.startDate) return 1;
+    const start = new Date(state.startDate + "T00:00:00");
+    const now = new Date(todayISO() + "T00:00:00");
+    const diff = Math.round((now - start) / 86400000);
+    return diff + 1;
+}
+
+function streakCount() {
+    const dates = Object.keys(state.days).filter(d => state.days[d]).sort().reverse();
+    if (dates.length === 0) return 0;
+    let streak = 0;
+    let cursor = new Date(todayISO() + "T00:00:00");
+    for (let i = 0; i < dates.length; i++) {
+        const candidate = cursor.toISOString().slice(0,10);
+        if (state.days[candidate]) {
+            streak++;
+            cursor.setDate(cursor.getDate() - 1);
+        } else if (i === 0) {
+            // heute noch nicht abgehakt — versuch's mit gestern
+            cursor.setDate(cursor.getDate() - 1);
+            const y = cursor.toISOString().slice(0,10);
+            if (state.days[y]) {
+                streak++;
+                cursor.setDate(cursor.getDate() - 1);
+            } else break;
+        } else break;
+    }
+    return streak;
+}
+
+/* ============================================================
+   Tab-Wechsel
+   ============================================================ */
+const tabBtns = document.querySelectorAll(".tab-btn");
+const sections = document.querySelectorAll(".section");
+
+function showTab(tab) {
+    tabBtns.forEach(b => b.classList.toggle("active", b.dataset.tab === tab));
+    sections.forEach(s => s.classList.toggle("active", s.id === "section-" + tab));
+    if (tab === "kana") nextKana();
+    if (tab === "vocab") renderVocab();
+    if (tab === "kanji") renderKanji();
+    if (tab === "tracker") renderTracker();
+    if (tab === "heute") renderToday();
+    if (tab === "lernen") showChapterList();
+    window.scrollTo(0, 0);
+}
+
+tabBtns.forEach(b => b.addEventListener("click", () => showTab(b.dataset.tab)));
+
+/* ============================================================
+   Heute-Tab
+   ============================================================ */
+function renderToday() {
+    ensureStartDate();
+    const dn = dayNumber();
+    const planEntry = DAY_PLAN.find(p => p.d === dn) || DAY_PLAN[DAY_PLAN.length - 1];
+    document.getElementById("today-day").textContent = `— Tag ${dn} —`;
+    document.getElementById("today-task").textContent = planEntry.task;
+    document.getElementById("today-detail").textContent = planEntry.detail;
+    const streak = streakCount();
+    const s = document.getElementById("today-streak");
+    if (streak > 0) {
+        s.style.display = "inline-block";
+        s.textContent = `🔥 Streak: ${streak} Tag${streak === 1 ? "" : "e"}`;
+    } else {
+        s.style.display = "none";
+    }
+
+    // Heute-Start-Button verlinkt in den Drill-Tab
+    const startBtn = document.getElementById("today-start");
+    startBtn.onclick = () => showTab(planEntry.tab);
+
+    // "Lernplan öffnen"-Button: in den Lernen-Tab und Plan-Kapitel öffnen
+    const planBtn = document.getElementById("goto-plan");
+    if (planBtn) {
+        planBtn.onclick = () => {
+            showTab("lernen");
+            const planChapter = CHAPTERS.find(c => c.id === "plan");
+            if (planChapter) openChapter(planChapter);
+        };
+    }
+}
+
+/* ============================================================
+   Kana-Drill
+   ============================================================ */
+let currentKana = null;
+let kanaPool = [];
+let kanaHistory = [];     // letzte gezeigte Kana-Objekte (Zurück-Button)
+let kanaHistoryIdx = -1;  // wo wir in der History stehen (-1 = neuestes)
+
+function buildKanaPool() {
+    const { system, scope } = state.kanaSettings;
+    let pool = [];
+    const sets = system === "both" ? ["hiragana","katakana"] : [system];
+    sets.forEach(sys => {
+        pool = pool.concat(KANA_DATA[sys].basic);
+        if (scope === "dakuten" || scope === "all") pool = pool.concat(KANA_DATA[sys].dakuten);
+        if (scope === "all") pool = pool.concat(KANA_DATA[sys].yoon);
+    });
+    return pool;
+}
+
+function resetKanaHistory() {
+    kanaHistory = [];
+    kanaHistoryIdx = -1;
+}
+
+function setupKanaSettings() {
+    document.querySelectorAll(".kana-system").forEach(c => {
+        c.addEventListener("click", () => {
+            document.querySelectorAll(".kana-system").forEach(x => x.classList.remove("active"));
+            c.classList.add("active");
+            state.kanaSettings.system = c.dataset.val;
+            saveState();
+            kanaPool = buildKanaPool();
+            resetKanaHistory();
+            nextKana();
+        });
+        c.classList.toggle("active", c.dataset.val === state.kanaSettings.system);
+    });
+    document.querySelectorAll(".kana-scope").forEach(c => {
+        c.addEventListener("click", () => {
+            document.querySelectorAll(".kana-scope").forEach(x => x.classList.remove("active"));
+            c.classList.add("active");
+            state.kanaSettings.scope = c.dataset.val;
+            saveState();
+            kanaPool = buildKanaPool();
+            resetKanaHistory();
+            nextKana();
+        });
+        c.classList.toggle("active", c.dataset.val === state.kanaSettings.scope);
+    });
+    document.querySelectorAll(".kana-mode").forEach(c => {
+        c.addEventListener("click", () => {
+            document.querySelectorAll(".kana-mode").forEach(x => x.classList.remove("active"));
+            c.classList.add("active");
+            state.kanaSettings.mode = c.dataset.val;
+            saveState();
+            nextKana();
+        });
+        c.classList.toggle("active", c.dataset.val === state.kanaSettings.mode);
+    });
+}
+
+function nextKana(useHistory) {
+    if (kanaPool.length === 0) kanaPool = buildKanaPool();
+    if (kanaPool.length === 0) return;
+
+    if (useHistory && kanaHistoryIdx >= 0 && kanaHistoryIdx < kanaHistory.length - 1) {
+        // Vorwärts in der History (nach einem Zurück)
+        kanaHistoryIdx++;
+        currentKana = kanaHistory[kanaHistoryIdx];
+    } else {
+        const idx = Math.floor(Math.random() * kanaPool.length);
+        currentKana = kanaPool[idx];
+        // History-Verwaltung: wenn wir mitten in der History sind, abschneiden
+        if (kanaHistoryIdx >= 0 && kanaHistoryIdx < kanaHistory.length - 1) {
+            kanaHistory = kanaHistory.slice(0, kanaHistoryIdx + 1);
+        }
+        kanaHistory.push(currentKana);
+        if (kanaHistory.length > 50) kanaHistory.shift();
+        kanaHistoryIdx = kanaHistory.length - 1;
+    }
+
+    renderCurrentKana();
+}
+
+function prevKana() {
+    if (kanaHistoryIdx <= 0) return; // keine vorige Karte
+    kanaHistoryIdx--;
+    currentKana = kanaHistory[kanaHistoryIdx];
+    renderCurrentKana();
+}
+
+function renderCurrentKana() {
+    const display = document.getElementById("kana-display");
+    const answer = document.getElementById("kana-answer");
+    const mnemonic = document.getElementById("kana-mnemonic");
+    const hanko = document.getElementById("kana-hanko");
+
+    answer.style.display = "none";
+    mnemonic.style.display = "none";
+    hanko.classList.remove("show");
+    document.getElementById("kana-card").classList.remove("shake");
+
+    if (state.kanaSettings.mode === "kana2romaji") {
+        display.textContent = currentKana.kana;
+        display.style.fontSize = "";
+        answer.textContent = currentKana.r;
+    } else {
+        display.textContent = currentKana.r;
+        display.style.fontSize = "4rem";
+        answer.textContent = currentKana.kana;
+    }
+    mnemonic.textContent = currentKana.m || "";
+
+    renderKanaChoices();
+    updateKanaStats();
+
+    // Zurück-Button-Status aktualisieren
+    const prevBtn = document.getElementById("kana-prev");
+    if (prevBtn) prevBtn.disabled = (kanaHistoryIdx <= 0);
+}
+
+function renderKanaChoices() {
+    const grid = document.getElementById("kana-choices");
+    grid.innerHTML = "";
+    const isToRomaji = state.kanaSettings.mode === "kana2romaji";
+    const correct = isToRomaji ? currentKana.r : currentKana.kana;
+
+    // wähle 3 falsche Antworten
+    const others = [];
+    const shuffled = [...kanaPool].sort(() => Math.random() - 0.5);
+    for (const c of shuffled) {
+        const v = isToRomaji ? c.r : c.kana;
+        if (v !== correct && !others.includes(v)) others.push(v);
+        if (others.length === 3) break;
+    }
+    const choices = [correct, ...others].sort(() => Math.random() - 0.5);
+
+    choices.forEach(c => {
+        const btn = document.createElement("button");
+        btn.className = "choice-btn" + (isToRomaji ? "" : " jp");
+        btn.textContent = c;
+        btn.onclick = () => handleKanaChoice(btn, c, correct);
+        grid.appendChild(btn);
+    });
+}
+
+function handleKanaChoice(btn, value, correct) {
+    document.querySelectorAll("#kana-choices .choice-btn").forEach(b => b.disabled = true);
+    if (value === correct) {
+        btn.classList.add("correct");
+        state.kanaStats.correct++;
+        state.kanaStats.streak++;
+        const hanko = document.getElementById("kana-hanko");
+        hanko.classList.add("show");
+        markTodayDone();
+    } else {
+        btn.classList.add("wrong");
+        document.querySelectorAll("#kana-choices .choice-btn").forEach(b => {
+            if (b.textContent === correct) b.classList.add("correct");
+        });
+        state.kanaStats.wrong++;
+        state.kanaStats.streak = 0;
+        document.getElementById("kana-card").classList.add("shake");
+    }
+    document.getElementById("kana-answer").style.display = "block";
+    document.getElementById("kana-mnemonic").style.display = "block";
+    saveState();
+    updateKanaStats();
+    setTimeout(nextKana, value === correct ? 700 : 1500);
+}
+
+function updateKanaStats() {
+    document.getElementById("kana-correct").textContent = state.kanaStats.correct;
+    document.getElementById("kana-wrong").textContent = state.kanaStats.wrong;
+    document.getElementById("kana-streak").textContent = state.kanaStats.streak;
+}
+
+document.getElementById("kana-show").onclick = () => {
+    const a = document.getElementById("kana-answer");
+    const m = document.getElementById("kana-mnemonic");
+    const showing = a.style.display === "block";
+    a.style.display = showing ? "none" : "block";
+    m.style.display = showing ? "none" : "block";
+};
+document.getElementById("kana-next").onclick = () => nextKana(true);
+document.getElementById("kana-prev").onclick = prevKana;
+
+/* ============================================================
+   Vokabeln
+   ============================================================ */
+let vocabPool = [];
+let vocabFlipped = false;
+
+function setupVocabThemes() {
+    const container = document.getElementById("vocab-themes");
+    container.innerHTML = "<label>Themen</label>";
+    VOCAB_THEMES.forEach(th => {
+        const btn = document.createElement("button");
+        btn.className = "chip" + (state.vocabFilter.includes(th.id) ? " active" : "");
+        btn.textContent = th.name;
+        btn.dataset.id = th.id;
+        btn.onclick = () => {
+            const isActive = state.vocabFilter.includes(th.id);
+            if (isActive && state.vocabFilter.length > 1) {
+                state.vocabFilter = state.vocabFilter.filter(x => x !== th.id);
+                btn.classList.remove("active");
+            } else if (!isActive) {
+                state.vocabFilter.push(th.id);
+                btn.classList.add("active");
+            }
+            saveState();
+            renderVocab();
+        };
+        container.appendChild(btn);
+    });
+}
+
+function renderVocab() {
+    vocabPool = VOCAB_DATA.filter(v => state.vocabFilter.includes(v.t));
+    if (vocabPool.length === 0) {
+        document.getElementById("vocab-jp").textContent = "—";
+        document.getElementById("vocab-romaji").style.display = "none";
+        document.getElementById("vocab-de").style.display = "none";
+        return;
+    }
+    if (state.vocabIdx >= vocabPool.length) state.vocabIdx = 0;
+    const v = vocabPool[state.vocabIdx];
+    document.getElementById("vocab-jp").textContent = v.jp;
+    document.getElementById("vocab-romaji").textContent = v.r;
+    document.getElementById("vocab-de").textContent = v.de;
+    document.getElementById("vocab-pos").textContent = state.vocabIdx + 1;
+    document.getElementById("vocab-total").textContent = vocabPool.length;
+
+    vocabFlipped = false;
+    document.getElementById("vocab-romaji").style.display = "none";
+    document.getElementById("vocab-de").style.display = "none";
+
+    let b1=0,b2=0,b3=0;
+    vocabPool.forEach(x => {
+        const box = state.vocabBoxes[x.jp] || 1;
+        if (box === 1) b1++; else if (box === 2) b2++; else b3++;
+    });
+    document.getElementById("vocab-b1").textContent = b1;
+    document.getElementById("vocab-b2").textContent = b2;
+    document.getElementById("vocab-b3").textContent = b3;
+}
+
+document.getElementById("vocab-card").onclick = () => {
+    vocabFlipped = !vocabFlipped;
+    document.getElementById("vocab-romaji").style.display = vocabFlipped ? "block" : "none";
+    document.getElementById("vocab-de").style.display = vocabFlipped ? "block" : "none";
+};
+
+document.getElementById("vocab-pass").onclick = () => {
+    if (vocabPool.length === 0) return;
+    const v = vocabPool[state.vocabIdx];
+    const cur = state.vocabBoxes[v.jp] || 1;
+    state.vocabBoxes[v.jp] = Math.min(cur + 1, 3);
+    state.vocabIdx = (state.vocabIdx + 1) % vocabPool.length;
+    saveState();
+    renderVocab();
+    markTodayDone();
+};
+document.getElementById("vocab-fail").onclick = () => {
+    if (vocabPool.length === 0) return;
+    const v = vocabPool[state.vocabIdx];
+    state.vocabBoxes[v.jp] = 1;
+    state.vocabIdx = (state.vocabIdx + 1) % vocabPool.length;
+    saveState();
+    renderVocab();
+};
+document.getElementById("vocab-keep").onclick = () => {
+    state.vocabIdx = (state.vocabIdx + 1) % vocabPool.length;
+    saveState();
+    renderVocab();
+};
+document.getElementById("vocab-next").onclick = () => {
+    if (vocabPool.length === 0) return;
+    state.vocabIdx = (state.vocabIdx + 1) % vocabPool.length;
+    saveState();
+    renderVocab();
+};
+document.getElementById("vocab-prev").onclick = () => {
+    if (vocabPool.length === 0) return;
+    state.vocabIdx = (state.vocabIdx - 1 + vocabPool.length) % vocabPool.length;
+    saveState();
+    renderVocab();
+};
+
+/* ============================================================
+   Kanji
+   ============================================================ */
+let kanjiPool = [];
+
+function setupKanjiBlocks() {
+    const container = document.getElementById("kanji-blocks");
+    container.innerHTML = "<label>Block</label>";
+    KANJI_BLOCKS.forEach(bl => {
+        const btn = document.createElement("button");
+        btn.className = "chip" + (state.kanjiBlock === bl.id ? " active" : "");
+        btn.textContent = bl.name;
+        btn.dataset.id = bl.id;
+        btn.onclick = () => {
+            document.querySelectorAll("#kanji-blocks .chip").forEach(c => c.classList.remove("active"));
+            btn.classList.add("active");
+            state.kanjiBlock = bl.id;
+            state.kanjiIdx = 0;
+            saveState();
+            renderKanji();
+        };
+        container.appendChild(btn);
+    });
+}
+
+function renderKanji() {
+    kanjiPool = KANJI_DATA.filter(k => k.b === state.kanjiBlock);
+    if (kanjiPool.length === 0) return;
+    if (state.kanjiIdx >= kanjiPool.length) state.kanjiIdx = 0;
+    const k = kanjiPool[state.kanjiIdx];
+    document.getElementById("kanji-display").textContent = k.k;
+    document.getElementById("kanji-meaning").textContent = k.m;
+    document.getElementById("kanji-reading").textContent = k.rd;
+    document.getElementById("kanji-example").textContent = k.ex;
+    document.getElementById("kanji-pos").textContent = state.kanjiIdx + 1;
+    document.getElementById("kanji-total").textContent = kanjiPool.length;
+    const blockMeta = KANJI_BLOCKS.find(b => b.id === state.kanjiBlock);
+    document.getElementById("kanji-block-name").textContent = blockMeta ? blockMeta.name : "";
+
+    document.getElementById("kanji-meaning").style.display = "none";
+    document.getElementById("kanji-reading").style.display = "none";
+    document.getElementById("kanji-example").style.display = "none";
+}
+
+document.getElementById("kanji-card").onclick = () => {
+    const flipped = document.getElementById("kanji-meaning").style.display !== "none";
+    document.getElementById("kanji-meaning").style.display = flipped ? "none" : "block";
+    document.getElementById("kanji-reading").style.display = flipped ? "none" : "block";
+    document.getElementById("kanji-example").style.display = flipped ? "none" : "block";
+};
+
+document.getElementById("kanji-next").onclick = () => {
+    state.kanjiIdx = (state.kanjiIdx + 1) % kanjiPool.length;
+    saveState();
+    renderKanji();
+    markTodayDone();
+};
+document.getElementById("kanji-prev").onclick = () => {
+    state.kanjiIdx = (state.kanjiIdx - 1 + kanjiPool.length) % kanjiPool.length;
+    saveState();
+    renderKanji();
+};
+
+/* ============================================================
+   Tracker
+   ============================================================ */
+const TRACKER_WEEKS = [
+    {phase:"Phase 1 — Schrift-Fundament", weeks:[
+        {n:1, theme:"Hiragana あ-か-さ-た"},
+        {n:2, theme:"Hiragana な-は-ま-や-ら-わ"},
+        {n:3, theme:"Hiragana Dakuten + Yōon"},
+        {n:4, theme:"Katakana ア-カ-サ-タ-ナ"},
+        {n:5, theme:"Katakana ハ-マ-ヤ-ラ-ワ"},
+        {n:6, theme:"Erste Vokabeln (Begrüßung)"},
+        {n:7, theme:"Zahlen, Familie"},
+        {n:8, theme:"Grammatik-Basics"}
+    ]},
+    {phase:"Phase 2 — Reise-Basics", weeks:[
+        {n:9, theme:"Restaurant Teil 1"},
+        {n:10,theme:"Restaurant Teil 2"},
+        {n:11,theme:"Speisekarte lesen"},
+        {n:12,theme:"Verkehr (Bahnhof, Zug)"},
+        {n:13,theme:"Verkehr (Wegfindung)"},
+        {n:14,theme:"Reisesätze 4-5"},
+        {n:15,theme:"Einkaufen + Geld"},
+        {n:16,theme:"Konbini & Supermarkt"},
+        {n:17,theme:"Wiederholung"}
+    ]},
+    {phase:"Phase 3 — Vertiefung", weeks:[
+        {n:18,theme:"Hotel + Check-in"},
+        {n:19,theme:"Höflichkeitsformen"},
+        {n:20,theme:"Hotel-Konversation"},
+        {n:21,theme:"Notfall Teil 1"},
+        {n:22,theme:"Gesundheit + Körper"},
+        {n:23,theme:"Notfall + Polizei"},
+        {n:24,theme:"Smalltalk + Wetter"},
+        {n:25,theme:"Höflich ablehnen"},
+        {n:26,theme:"Wiederholung + Selbsttest"}
+    ]}
+];
+
+const DAYS_DE = ["Mo","Di","Mi","Do","Fr","Sa","So"];
+
+function trackerDateForWeekDay(weekN, dayIdx) {
+    if (!state.startDate) ensureStartDate();
+    const start = new Date(state.startDate + "T00:00:00");
+    const dayOffset = (weekN - 1) * 7 + dayIdx;
+    start.setDate(start.getDate() + dayOffset);
+    return start.toISOString().slice(0,10);
+}
+
+function renderTracker() {
+    ensureStartDate();
+    const container = document.getElementById("tracker-content");
+    container.innerHTML = "";
+    TRACKER_WEEKS.forEach(phase => {
+        const ph = document.createElement("div");
+        ph.className = "tracker-phase-header";
+        ph.textContent = phase.phase;
+        container.appendChild(ph);
+        phase.weeks.forEach(w => {
+            const row = document.createElement("div");
+            row.className = "tracker-week";
+            const label = document.createElement("div");
+            label.className = "tracker-label";
+            label.textContent = `W${w.n}`;
+            label.title = w.theme;
+            row.appendChild(label);
+            for (let i=0; i<7; i++) {
+                const date = trackerDateForWeekDay(w.n, i);
+                const cell = document.createElement("div");
+                cell.className = "day-cell" + (state.days[date] ? " done" : "");
+                cell.title = `${DAYS_DE[i]} · ${date}`;
+                cell.onclick = () => {
+                    state.days[date] = !state.days[date];
+                    saveState();
+                    cell.classList.toggle("done", !!state.days[date]);
+                };
+                row.appendChild(cell);
+            }
+            container.appendChild(row);
+        });
+    });
+}
+
+function markTodayDone() {
+    const t = todayISO();
+    if (!state.days[t]) {
+        state.days[t] = true;
+        saveState();
+    }
+}
+
+document.getElementById("reset-all").onclick = () => {
+    if (confirm("Alle Daten wirklich zurücksetzen? Streak, Tracker, Vokabel-Boxen — alles weg.")) {
+        localStorage.removeItem(STORAGE_KEY);
+        state = defaultState();
+        ensureStartDate();
+        renderToday();
+        renderTracker();
+        renderVocab();
+    }
+};
+
+/* ============================================================
+   Lernen-Tab — Kapitel-Liste, Detail-Ansicht, Notability-Export
+   ============================================================ */
+const chapterListEl = document.getElementById("chapter-list");
+const chapterListView = document.getElementById("chapter-list-view");
+const chapterDetailView = document.getElementById("chapter-detail-view");
+const chapterContentEl = document.getElementById("chapter-content");
+
+function buildChapterList() {
+    chapterListEl.innerHTML = "";
+    CHAPTERS.forEach(ch => {
+        const card = document.createElement("div");
+        card.className = "chapter-card";
+        card.innerHTML = `
+            <div class="ch-num jp">${ch.num}</div>
+            <div class="ch-meta">
+                <div class="ch-title">${ch.title}</div>
+                <div class="ch-jp">${ch.jp}</div>
+            </div>
+            <div class="ch-arrow">›</div>
+        `;
+        card.onclick = () => openChapter(ch);
+        chapterListEl.appendChild(card);
+    });
+}
+
+function showChapterList() {
+    chapterListView.style.display = "block";
+    chapterDetailView.classList.remove("active");
+}
+
+function openChapter(ch) {
+    chapterContentEl.innerHTML = ch.body;
+    chapterContentEl.dataset.chapterId = ch.id;
+    chapterContentEl.dataset.chapterTitle = ch.title;
+    chapterListView.style.display = "none";
+    chapterDetailView.classList.add("active");
+    window.scrollTo(0, 0);
+}
+
+document.getElementById("ch-back").onclick = showChapterList;
+
+document.getElementById("ch-print").onclick = () => {
+    // Setze Print-Marker, blende auf Druckansicht um, rufe window.print()
+    const title = chapterContentEl.dataset.chapterTitle || "Lernplan Japanisch";
+    const oldTitle = document.title;
+    document.title = `日本語 — ${title}`;
+    document.body.classList.add("printing");
+    setTimeout(() => {
+        window.print();
+        // Nach Druck-Dialog wieder normalisieren
+        setTimeout(() => {
+            document.body.classList.remove("printing");
+            document.title = oldTitle;
+        }, 500);
+    }, 100);
+};
+
+// Falls User den Druckdialog cancelt — auch normalisieren
+window.addEventListener("afterprint", () => {
+    document.body.classList.remove("printing");
+});
+
+/* ============================================================
+   Init
+   ============================================================ */
+ensureStartDate();
+setupKanaSettings();
+setupVocabThemes();
+setupKanjiBlocks();
+buildChapterList();
+kanaPool = buildKanaPool();
+renderToday();
+</script>
+</body>
+</html>
